@@ -6,3 +6,6 @@ config/development.config.php
 data/cache/*
 !data/cache/.gitkeep
 phpunit.xml
+config/autoload/doctrine.local.php
+config/autoload/local.php
+config/autoload/development.local.php
