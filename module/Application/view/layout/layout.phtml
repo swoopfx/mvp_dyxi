@@ -1,74 +1,139 @@
 <?php
+
 /**
  * @var Laminas\View\Renderer\PhpRenderer $this
  */
 ?>
 <?= $this->doctype() ?>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <?= $this->headTitle('Laminas MVC Skeleton')->setSeparator(' - ')->setAutoEscape(false) ?>
 
-        <?= $this->headMeta()
-            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
-            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
-        ?>
+<head>
+    <meta charset="utf-8">
+    <?= $this->headTitle('Laminas MVC Skeleton')->setSeparator(' - ')->setAutoEscape(false) ?>
 
-        <!-- Styles -->
-        <?= $this->headLink([
-                'rel' => 'shortcut icon',
-                'type' => 'image/vnd.microsoft.icon',
-                'href' => $this->basePath() . '/img/favicon.ico'
-            ])
-            ->prependStylesheet($this->basePath('css/style.css'))
-            ->prependStylesheet($this->basePath('css/bootstrap.min.css')) ?>
+    <?= $this->headMeta()
+        ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+        ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ?>
 
-        <!-- Scripts -->
-        <?= $this->headScript() ?>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-md navbar-dark mb-4" role="navigation">
-            <div class="container">
-                <a class="navbar-brand" href="<?= $this->url('home') ?>">
-                    <img src="<?= $this->basePath('img/laminas-logo.svg') ?>" alt="Laminas">
-                    <span class="navbar-text text-light">MVC Skeleton</span>
-                </a>
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a
-                                class="nav-link active"
-                                aria-current="page"
-                                href="<?= $this->url('home') ?>"
-                            >Home
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <!-- Styles -->
+    <?= $this->headLink([
+        'rel' => 'shortcut icon',
+        'type' => 'image/vnd.microsoft.icon',
+        'href' => $this->basePath() . '/img/favicon.ico'
+    ])
+        ->prependStylesheet($this->basePath('css/style.css'))
+        ->prependStylesheet($this->basePath('css/bootstrap.min.css')) ?>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue-toast-notification@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/vue-toast-notification@3/dist/theme-sugar.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <?= $this->headScript() ?>
+</head>
+
+<body id="app">
+    <nav class="navbar navbar-expand-md navbar-dark mb-4" role="navigation">
         <div class="container">
-            <?= $this->content ?>
-            <hr>
-            <footer>
-                <p>
-                    &copy; <?= date('Y') ?>
-                    <a href="https://getlaminas.org/">Laminas Project</a> a Series of LF Projects, LLC.
-                </p>
-            </footer>
+            <a class="navbar-brand" href="<?= $this->url('home') ?>">
+
+                <span class="navbar-text text-light">Dyxi MVP</span>
+            </a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a
+                            class="nav-link active"
+                            aria-current="page"
+                            href="<?= $this->url('home') ?>">Home
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <?= $this->inlineScript()
-            ->prependFile($this->basePath('js/bootstrap.min.js')) ?>
-    </body>
+    </nav>
+    <div class="container">
+        <?= $this->content ?>
+        <hr>
+        <footer>
+            <p>
+                &copy; <?= date('Y') ?>
+                <a href="https://getlaminas.org/">Dyxi MVP</a> Orula Deviant 
+            </p>
+        </footer>
+    </div>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    message: 'Hello Vue!'
+                }
+            },
+
+            methods: {
+                showToast() {
+                    this.$toast.open('This is a toast notification!');
+                },
+
+                showAlert() {
+                    Swal.fire('This is an alert!');
+                },
+
+                registerStudent() {
+                    axios.post('/register-student', {
+                        studentName: this.studentName,
+                        teacherId: this.teacherId,
+                        isDyslexic: this.isDyslexic
+                    })
+                    .then(response => {
+                        this.$toast.open('Student registered successfully!');
+                    })
+                    .catch(error => {
+                        Swal.fire('Error registering student');
+                    });
+                },
+
+                registerTeacher() {
+                    if (!this.$refs.teacherNameInput.value) {
+                        Swal.fire('Please enter a teacher name');
+                        return;
+                    }
+                    let formInput = new FormData();
+                    formInput.append('teacherName', this.$refs.teacherNameInput.value);
+                    axios.post('/register-teacher', formInput)
+                    .then(response => {
+                        this.$toast.open('Teacher registered successfully!');
+                    })
+                    .catch(error => {
+                        Swal.fire('Error registering teacher');
+                    });
+                }
+
+                
+            }
+
+
+        }).mount('#app');
+    </script>
+
+    <?= $this->inlineScript()
+        ->prependFile($this->basePath('js/bootstrap.min.js')) ?>
+</body>
+
 </html>

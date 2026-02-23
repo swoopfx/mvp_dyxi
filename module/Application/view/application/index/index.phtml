@@ -23,16 +23,9 @@
 <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="col">
         <div class="card h-100">
-            <h2 class="card-header">Follow Development</h2>
+            <h2 class="card-header">Register a teacher</h2>
             <div class="card-body">
-                <p>
-                    Laminas Project is under active development. If you are
-                    interested in following the development, you can check
-                    <a href="https://getlaminas.org/blog/">Laminas dev blog</a>,
-                    and <a href="https://github.com/issues?utf8=%E2%9C%93&amp;q=is:issue+org:laminas">Laminas issue tracker</a>
-                    (link requires a GitHub account). This is a great resource
-                    for staying up to date with the latest developments!
-                </p>
+               
             </div>
             <div class="card-footer">
                 <a class="btn btn-primary" href="<?php echo $this->url('application', ["action" => "register-teacher"]); ?>">Create Teacher &raquo;</a>
@@ -42,12 +35,9 @@
 
     <div class="col">
         <div class="card h-100">
-            <h2 class="card-header">Discover Modules</h2>
+            <h2 class="card-header">Evaluate a child</h2>
             <div class="card-body">
-                <p>
-                    Laminas MVC is a modular application.
-                    You can find multiple compatible modules on packagist.
-                </p>
+               
             </div>
             <div class="card-footer">
                 <a class="btn btn-primary" href="<?php echo $this->url('application', ["action" => "register-student"]); ?>">Create Student &raquo;</a>
@@ -57,18 +47,14 @@
 
     <div class="col">
         <div class="card h-100">
-            <h2 class="card-header">Help &amp; Support</h2>
+            <h2 class="card-header">Admin</h2>
             <div class="card-body">
                 <p>
-                    If you need any help or support while developing with Laminas,
-                    you may reach us via <a href="https://laminas.dev/chat">chat</a> or
-                    <a href="https://discourse.laminas.dev">forum</a>.
-                    We'd love to hear any questions or feedback you may have
-                    regarding any release.
+                    
                 </p>
             </div>
             <div class="card-footer">
-                <a class="btn btn-primary" href="https://laminas.dev/chat" target="_blank">Ping us on chat &raquo;</a>
+                <a class="btn btn-primary" href="<?php echo $this->url('application', ["action" => "admin"]); ?>">Admin &raquo;</a>
             </div>
         </div>
     </div>

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Controller\Factory\IndexControllerFactory;
+use Application\Service\GeneralService;
+use Application\Service\Factory\GeneralFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
-use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
     'router' => [
@@ -35,7 +37,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => IndexControllerFactory::class,
         ],
     ],
     'view_manager' => [
@@ -52,6 +54,12 @@ return [
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
+        ],
+    ],
+
+    'service_manager' => [
+        'factories' => [
+            GeneralService::class => GeneralFactory::class,
         ],
     ],
 

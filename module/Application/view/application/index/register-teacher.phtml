@@ -1,4 +1,9 @@
-<?php
-?>
-
-Welcome Teacher
+<form>
+  <div class="mb-3">
+    <label for="teachername" class="form-label">Teacher Name</label>
+    <input type="text" ref="teacherNameInput" class="form-control" id="teachername" aria-describedby="teacherHelp" placeholder="Enter teacher name">
+    <div id="teacherHelp" class="form-text">We'll never share your teacher name with anyone else.</div>
+  </div>
+  
+  <button type="submit" @click.prevent="registerTeacher()" class="btn btn-primary">Submit</button> 
+</form>
