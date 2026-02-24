@@ -74,7 +74,7 @@
         <footer>
             <p>
                 &copy; <?= date('Y') ?>
-                <a href="https://getlaminas.org/">Dyxi MVP</a> Orula Deviant 
+                <a href="https://getlaminas.org/">Dyxi MVP</a> Orula Deviant
             </p>
         </footer>
     </div>
@@ -82,7 +82,8 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    message: 'Hello Vue!'
+                    message: 'Hello Vue!',
+                    isDyslexic: true,
                 }
             },
 
@@ -91,22 +92,53 @@
                     this.$toast.open('This is a toast notification!');
                 },
 
+                toggleIsDyslexic() {
+                    this.isDyslexic = !this.isDyslexic;
+                },
+
                 showAlert() {
                     Swal.fire('This is an alert!');
                 },
 
                 registerStudent() {
-                    axios.post('/register-student', {
-                        studentName: this.studentName,
-                        teacherId: this.teacherId,
-                        isDyslexic: this.isDyslexic
-                    })
-                    .then(response => {
-                        this.$toast.open('Student registered successfully!');
-                    })
-                    .catch(error => {
-                        Swal.fire('Error registering student');
-                    });
+                    if (!this.$refs.studentName.value || !this.$refs.teacherId.value) {
+                        Swal.fire('Please enter both student name and teacher ID');
+                        return;
+                    } else {
+                        let formData = new FormData();
+                        formData.append('studentName', this.$refs.studentName.value);
+                        formData.append('studentAge', this.$refs.studentAge.value);
+                        formData.append('teacherid', this.$refs.teacherId.value);
+                        formData.append('isDyslexic', this.isDyslexic);
+
+                        axios.post('/application/create-student', formData)
+                            .then(response => {
+                                if (response.status == 201) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: response.data.message,
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: err.response.data.message,
+
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: err.response.data.message,
+
+                                });
+                            });
+                    }
                 },
 
                 registerTeacher() {
@@ -116,16 +148,34 @@
                     }
                     let formInput = new FormData();
                     formInput.append('teacherName', this.$refs.teacherNameInput.value);
-                    axios.post('/register-teacher', formInput)
-                    .then(response => {
-                        this.$toast.open('Teacher registered successfully!');
-                    })
-                    .catch(error => {
-                        Swal.fire('Error registering teacher');
-                    });
+                    axios.post('/application/create-teacher', formInput)
+                        .then(response => {
+                            if (response.status == 201) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: response.data.message,
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: "An error occured"
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: "An error occured"
+                            });
+                        });
                 }
 
-                
+
             }
 
 

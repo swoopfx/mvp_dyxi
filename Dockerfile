@@ -43,7 +43,9 @@ RUN apt-get install --yes libicu-dev \
 ###
 
 ## MySQL PDO support
-# RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_mysql
+
+
 
 ## PostgreSQL PDO support
 # RUN apt-get install --yes libpq-dev \
@@ -54,8 +56,8 @@ RUN apt-get install --yes libicu-dev \
 ###
 
 ## APCU
-# RUN pecl install apcu \
-#     && docker-php-ext-enable apcu
+RUN pecl install apcu \
+    && docker-php-ext-enable apcu
 
 ## Memcached
 # RUN apt-get install --yes libmemcached-dev \
@@ -74,5 +76,23 @@ RUN apt-get install --yes libicu-dev \
 #     && pecl install redis \
 #     && docker-php-ext-enable redis
 
-
 WORKDIR /var/www
+
+RUN service mysql start
+
+COPY bin .
+COPY composer.json .
+COPY . .
+
+# RUN composer update --no-interaction --optimize-autoloader --no-dev --prefer-dist -vvv
+
+# COPY . .
+
+RUN vendor/bin/doctrine-module migrations:diff
+
+RUN vendor/bin/doctrine-module migrations:migrate --no-interaction
+
+
+
+
+

@@ -6,9 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="teacher", indexes={
- *     @ORM\Index(name="teacher_id_index", columns={"teacher_id, uuid"})
- * }, uniqueConstraints={
+ * @ORM\Table(name="teacher",  uniqueConstraints={
  * @ORM\UniqueConstraint(name="teacher_id_unique", columns={"teacher_id"})})
  * 
  * 

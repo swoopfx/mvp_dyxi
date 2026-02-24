@@ -78,11 +78,11 @@ return [
                     __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
                 ]
             ],
-            // 'odm_default' => [
-            //     'drivers' => [
-            //         __NAMESPACE__ . '\Document' => __NAMESPACE__ . 'doc_driver',
-            //     ],
-            // ],
+            'odm_default' => [
+                'drivers' => [
+                    __NAMESPACE__ . '\Document' => __NAMESPACE__ . 'doc_driver',
+                ],
+            ],
         ]
     ],
 
