@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Entity\Teacher;
+use Application\Entity\Student;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
 
@@ -187,6 +188,134 @@ class IndexController extends AbstractActionController
     {
         return new ViewModel();
     }
+
+
+    public function getStudentDetailsAction(){
+         $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        $request = $this->getRequest();
+        if ($request->isGet()) {
+            $studentId = $this->params()->fromQuery('studentId', null);
+
+            if (!$studentId) {
+                $response->setStatusCode(400);
+                $response->setContent(json_encode([
+                    'success' => false,
+                    'message' => 'Student ID is required',
+                ]));
+                return $response;
+            }
+
+            $student = $this->em->getRepository(Student::class)->findOneBy(['studentId' => $studentId]);
+
+            if (!$student) {
+                $response->setStatusCode(404);
+                $response->setContent(json_encode([
+                    'success' => false,
+                    'message' => "Student with ID '$studentId' not found",
+                ]));
+                return $response;
+            }
+
+            $response->setStatusCode(200);
+            $response->setContent(json_encode([
+                'success' => true,
+                'data' => [
+                    'studentName' => $student->getStudentName(),
+                    'isDyslexic' => $student->getIsDyslexic(),
+                    'studentAge' => $student->getStudentAge(),
+                    'teacherId' => $student->getTeacherId()->getTeacherId(),
+                   'uuid'=>$student->getUuid(),
+                   'id'=>$student->getStudentId()
+                   
+                ],
+            ]));
+        }
+
+        return $response;
+
+    }
+
+
+    public function postDyxGame1Action(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            // Handle game data submission here
+            // For this example, we'll just return a success response
+            $response->setStatusCode(200);
+            $response->setContent(json_encode([
+                'success' => true,
+                'message' => 'Game data received successfully',
+            ]));
+        }
+
+        return $response;   
+    }
+
+
+
+    public function postDyxGame2Action(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            // Handle game data submission here
+            // For this example, we'll just return a success response
+            $response->setStatusCode(200);
+            $response->setContent(json_encode([
+                'success' => true,
+                'message' => 'Game data received successfully',
+            ]));
+        }
+
+        return $response;   
+    }   
+
+
+    public function postDyxGame3Action(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            // Handle game data submission here
+            // For this example, we'll just return a success response
+            $response->setStatusCode(200);
+            $response->setContent(json_encode([
+                'success' => true,
+                'message' => 'Game data received successfully',
+            ]));
+        }
+
+        return $response;   
+    }
+
+
+    public function postDyxGame4Action(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            // Handle game data submission here
+            // For this example, we'll just return a success response
+            $response->setStatusCode(200);
+            $response->setContent(json_encode([
+                'success' => true,
+                'message' => 'Game data received successfully',
+            ]));
+        }
+
+        return $response;   
+    }
+
+    
+
 
 
 
