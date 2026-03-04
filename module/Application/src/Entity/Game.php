@@ -8,10 +8,10 @@ use Application\Entity\GameType;
 /**
  * GameBracketDefinition
  *
- * @ORM\Table(name="game_bracket_definition")
+ * @ORM\Table(name="game")
  * @ORM\Entity
  */
-class GameBracketDefinition
+class Game
 {
     /**
      * @ORM\Id 
@@ -42,6 +42,15 @@ class GameBracketDefinition
      */
     private $gamesType; // phonological, Speaking Test, writing Test
 
+
+    /**
+     * Defines if ADHD or dyslexia
+     *
+     * @var GameCategory
+     * @ORM\ManyToOne(targetEntity="GameCategory")
+     */
+    private $gameCategory; // ADHD or Dyslexia
+
     /**
      * Undocumented variable
      * @ORM\Column(name="game_definition", type="longtext", nullable=true)
@@ -70,6 +79,14 @@ class GameBracketDefinition
      */
 
     private $updatedAt;
+
+    /**
+     * Undocumented variable
+     * 
+     * @var GameBracket
+     * @ORM\ManyToOne(targetEntity="GameBracket")
+     */
+    private $gameBracket;
 
     public function getId()
     {
@@ -189,7 +206,7 @@ class GameBracketDefinition
      * Get undocumented variable
      *
      * @return  \Datetime
-     */ 
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
@@ -201,10 +218,78 @@ class GameBracketDefinition
      * @param  \Datetime  $createdAt  Undocumented variable
      *
      * @return  self
-     */ 
+     */
     public function setCreatedAt(\Datetime $createdAt)
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of updatedAt
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set the value of updatedAt
+     *
+     * @return  self
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get defines if ADHD or dyslexia
+     *
+     * @return  GameCategory
+     */
+    public function getGameCategory()
+    {
+        return $this->gameCategory;
+    }
+
+    /**
+     * Set defines if ADHD or dyslexia
+     *
+     * @param  GameCategory  $gameCategory  Defines if ADHD or dyslexia
+     *
+     * @return  self
+     */
+    public function setGameCategory(GameCategory $gameCategory)
+    {
+        $this->gameCategory = $gameCategory;
+
+        return $this;
+    }
+
+    /**
+     * Get undocumented variable
+     *
+     * @return  GameBracket
+     */ 
+    public function getGameBracket()
+    {
+        return $this->gameBracket;
+    }
+
+    /**
+     * Set undocumented variable
+     *
+     * @param  GameBracket  $gameBracket  Undocumented variable
+     *
+     * @return  self
+     */ 
+    public function setGameBracket(GameBracket $gameBracket)
+    {
+        $this->gameBracket = $gameBracket;
 
         return $this;
     }
