@@ -9,3 +9,4 @@ phpunit.xml
 config/autoload/doctrine.local.php
 config/autoload/local.php
 config/autoload/development.local.php
+data/

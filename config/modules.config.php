@@ -6,6 +6,7 @@
  * This should be an array of module namespaces used in the application.
  */
 return [
+    'Laminas\Serializer',
     'Laminas\Mvc\Middleware',
     'Laminas\Cache',
     'Laminas\Paginator',
@@ -28,5 +29,6 @@ return [
     'DoctrineModule',
     'DoctrineORMModule',
     'Laminas\Diactoros',
+    'Laminas\Cache\Storage\Adapter\Redis',
     'Application',
 ];

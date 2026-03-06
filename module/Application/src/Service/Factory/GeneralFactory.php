@@ -4,6 +4,7 @@ namespace Application\Service\Factory;
 
 use Doctrine\ORM\EntityManager;
 use Application\Service\GeneralService;
+use Laminas\Cache\Storage\Adapter\Redis;
 
 
 class GeneralFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
@@ -15,6 +16,7 @@ class GeneralFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         // For example:
         // $someService = $container->get(SomeService::class);  
         $xservice->setEntityManager($container->get(EntityManager::class));
+        $xservice->setRedisManager($container->get(Redis::class));
         return $xservice;
     }
 }
