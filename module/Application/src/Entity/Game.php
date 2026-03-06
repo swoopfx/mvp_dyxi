@@ -4,6 +4,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Application\Entity\GameType;
+use Application\Entity\GameBracket;
 
 /**
  * GameBracketDefinition
@@ -53,7 +54,7 @@ class Game
 
     /**
      * Undocumented variable
-     * @ORM\Column(name="game_definition", type="longtext", nullable=true)
+     * @ORM\Column(name="game_definition", type="text", columnDefinition="LONGTEXT", nullable=true)
      * @var string
      */
     private $gameDefinition;

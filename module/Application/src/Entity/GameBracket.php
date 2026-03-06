@@ -1,13 +1,13 @@
 <?php
-
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Application\Entity\GameAgeBracket;
 use Application\Entity\GameLanguage;
 
-/****
+/**
  * GameBracket
+ * This class defines the bracket of age and language for each game deifinition 
  *
  * @ORM\Table(name="game_bracket")
  * @ORM\Entity
@@ -57,7 +57,7 @@ class GameBracket
 
     /**
      * Undocumented variable
-     * @ORM\Column(name="description", type="longtext", nullable=true)
+     * @ORM\Column(name="description", type="text", columnDefinition="LONGTEXT", nullable=true)
      * @var string
      */
     private $description;

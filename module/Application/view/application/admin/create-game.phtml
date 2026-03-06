@@ -1,0 +1,98 @@
+<?php
+$title = 'Create Game';
+$this->headTitle($title);
+?>
+<div class="container mt-5">
+    <h2><?= $this->escapeHtml($title) ?></h2>
+
+    <?php if ($this->error): ?>
+        <div class="alert alert-danger mt-3">
+            <?= $this->escapeHtml($this->error) ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($this->success): ?>
+        <div class="alert alert-success mt-3">
+            <?= $this->escapeHtml($this->success) ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="card card-body mt-4 shadow-sm border-0 bg-light">
+        <form method="post" action="<?= $this->url('admin', ['action' => 'create-game']) ?>">
+            
+            <div class="form-group mb-3">
+                <label for="gameName" class="form-label fw-bold">Game Name</label>
+                <input type="text" class="form-control" id="gameName" name="gameName" placeholder="Enter Game Name" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="gamePage" class="form-label fw-bold">Game Page</label>
+                <input type="text" class="form-control" id="gamePage" name="gamePage" placeholder="e.g. QML page reference" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="gameType" class="form-label fw-bold">Game Type</label>
+                        <select class="form-select form-control" id="gameType" name="gameType" required>
+                            <option value="">-- Select Type --</option>
+                            <?php foreach ($this->gameTypes as $type): ?>
+                                <option value="<?= $this->escapeHtmlAttr($type->getId()) ?>">
+                                    <?= $this->escapeHtml($type->getType() ?: 'ID: ' . $type->getId()) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="gameCategory" class="form-label fw-bold">Game Category</label>
+                        <select class="form-select form-control" id="gameCategory" name="gameCategory" required>
+                            <option value="">-- Select Category --</option>
+                            <?php foreach ($this->gameCategories as $category): ?>
+                                <option value="<?= $this->escapeHtmlAttr($category->getId()) ?>">
+                                    <?php
+                                    // GameCategory has no public getter for gameCategory property, using reflection fallback
+                                    try {
+                                        $reflection = new ReflectionClass($category);
+                                        $property = $reflection->getProperty('gameCategory');
+                                        $property->setAccessible(true);
+                                        echo $this->escapeHtml($property->getValue($category) ?: 'ID: ' . $category->getId());
+                                    } catch (\Exception $e) {
+                                        // Just in case property changes or is missing
+                                        echo 'ID: ' . $category->getId();
+                                    }
+                                    ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="gameBracket" class="form-label fw-bold">Game Bracket</label>
+                        <select class="form-select form-control" id="gameBracket" name="gameBracket" required>
+                            <option value="">-- Select Bracket --</option>
+                            <?php foreach ($this->gameBrackets as $bracket): ?>
+                                <option value="<?= $this->escapeHtmlAttr($bracket->getId()) ?>">
+                                    <?= $this->escapeHtml($bracket->getBracketName() ?: $bracket->getBracketId() ?: 'ID: ' . $bracket->getId()) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="gameDefinition" class="form-label fw-bold">Game Definition</label>
+                <textarea class="form-control" id="gameDefinition" name="gameDefinition" rows="4" placeholder="Description or JSON" required></textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4">Save Game</button>
+            </div>
+        </form>
+    </div>
+</div>

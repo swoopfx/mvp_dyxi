@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Controller\Factory\IndexControllerFactory;
+use Application\Controller\Factory\AdminControllerFactory;
 use Application\Service\GeneralService;
 use Application\Service\Factory\GeneralFactory;
 use Laminas\Router\Http\Literal;
@@ -33,11 +34,22 @@ return [
                     ],
                 ],
             ],
+            'admin' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/admin[/:action]',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'getGames',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => IndexControllerFactory::class,
+            Controller\AdminController::class => AdminControllerFactory::class,
         ],
     ],
     'view_manager' => [

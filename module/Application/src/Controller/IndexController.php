@@ -314,6 +314,59 @@ class IndexController extends AbstractActionController
         return $response;   
     }
 
+
+     public function getGamesAction()
+    {
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        $request = $this->getRequest();
+        if ($request->isGet()) {
+            $em = $this->em;
+            
+            try {
+                $games = $em->getRepository(Game::class)->findAll();
+                $data = [];
+
+                foreach ($games as $game) {
+                    $category = $game->getGameCategory();
+                    $type = $game->getGamesType();
+                    $bracket = $game->getGameBracket();
+
+                    $data[] = [
+                        'id' => $game->getId(),
+                        'gameName' => $game->getGameName(),
+                        'gamePage' => $game->getGamePage(),
+                        'uuid' => $game->getUuid(),
+                        'gameDefinition' => $game->getGameDefinition(),
+                        'createdAt' => $game->getCreatedAt() ? $game->getCreatedAt()->format('Y-m-d H:i:s') : null,
+                        'updatedAt' => $game->getUpdatedAt() ? $game->getUpdatedAt()->format('Y-m-d H:i:s') : null,
+                    ];
+                }
+                
+                $response->setStatusCode(200);
+                $response->setContent(json_encode([
+                    'success' => true,
+                    'data' => $data,
+                ]));
+            } catch (\Throwable $th) {
+                $response->setStatusCode(500);
+                $response->setContent(json_encode([
+                    'success' => false,
+                    'message' => 'Error retrieving games: ' . $th->getMessage(),
+                ]));
+            }
+        } else {
+             $response->setStatusCode(405);
+             $response->setContent(json_encode([
+                'success' => false,
+                'message' => 'Method Not Allowed',
+             ]));
+        }
+
+        return $response;
+    }
+
     
 
 

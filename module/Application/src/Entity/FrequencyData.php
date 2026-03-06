@@ -15,7 +15,7 @@ class FrequencyData
 
     /**
      * Undocumented variable
-     * @ORM\Column(name="frequency_data", type="longtext", nullable=true)
+     * @ORM\Column(name="frequency_data", type="text", columnDefinition="LONGTEXT", nullable=true)
      * @var string
      */
     private $frequencyData;

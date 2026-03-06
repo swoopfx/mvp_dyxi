@@ -23,7 +23,7 @@ class EyeTrackingData
 
     /**
      * Undocumented variable
-     * @ORM\Column(name="eye_tracking_data", type="longtext", nullable=true)
+     * @ORM\Column(name="eye_tracking_data", type="text", columnDefinition="LONGTEXT", nullable=true)
      * @var string
      */
     private $eyeTrackingData;
