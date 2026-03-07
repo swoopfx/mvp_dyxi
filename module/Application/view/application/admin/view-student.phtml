@@ -1,0 +1,36 @@
+<div class="container mt-5">
+    <h2>View Students</h2>
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Age</th>
+                    <th>Dyslexic?</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($this->students) > 0): ?>
+                    <?php foreach ($this->students as $student): ?>
+                    <tr>
+                        <td><?= $student->getId() ?></td>
+                        <td><?= $this->escapeHtml($student->getStudentName()) ?></td>
+                        <td><?= $this->escapeHtml($student->getStudentId()) ?></td>
+                        <td><?= $student->getStudentAge() ? $this->escapeHtml($student->getStudentAge()->getAgeBracket()) : '' ?></td>
+                        <td><?= $student->getIsDyslexic() ? 'Yes' : 'No' ?></td>
+                        <td>
+                            <a href="<?= $this->url('admin', ['action' => 'edit-student']) ?>?id=<?= $student->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="6" class="text-center">No students found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+</div>

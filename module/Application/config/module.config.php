@@ -40,7 +40,7 @@ return [
                     'route'    => '/admin[/:action]',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
-                        'action'     => 'getGames',
+                        'action'     => 'index',
                     ],
                 ],
             ],

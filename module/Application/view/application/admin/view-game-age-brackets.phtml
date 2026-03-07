@@ -1,0 +1,30 @@
+<div class="container mt-5">
+    <h2>View Game Age Brackets</h2>
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Age Bracket</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($this->ageBrackets) > 0): ?>
+                    <?php foreach ($this->ageBrackets as $ageBracket): ?>
+                    <tr>
+                        <td><?= $ageBracket->getId() ?></td>
+                        <td><?= $this->escapeHtml($ageBracket->getAgeBracket()) ?></td>
+                        <td>
+                            <a href="<?= $this->url('admin', ['action' => 'edit-game-age-bracket']) ?>?id=<?= $ageBracket->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="3" class="text-center">No game age brackets found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+</div>

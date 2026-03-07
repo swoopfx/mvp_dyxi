@@ -1,0 +1,30 @@
+<div class="container mt-5">
+    <h2>View Teachers</h2>
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Teacher Name</th>
+                    <th>Teacher ID</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($this->teachers) > 0): ?>
+                    <?php foreach ($this->teachers as $teacher): ?>
+                    <tr>
+                        <td><?= $teacher->getId() ?></td>
+                        <td><?= $this->escapeHtml($teacher->getTeacherName()) ?></td>
+                        <td><?= $this->escapeHtml($teacher->getTeacherId()) ?></td>
+                        <td><?= $teacher->getCreatedAt() ? $teacher->getCreatedAt()->format('Y-m-d H:i:s') : 'N/A' ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="4" class="text-center">No teachers found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+</div>

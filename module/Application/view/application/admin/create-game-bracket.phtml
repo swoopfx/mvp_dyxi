@@ -1,0 +1,48 @@
+<div class="container mt-5">
+    <h2>Create Game Bracket</h2>
+    <?php if ($this->error): ?>
+        <div class="alert alert-danger"><?= $this->error ?></div>
+    <?php endif; ?>
+    <?php if ($this->success): ?>
+        <div class="alert alert-success"><?= $this->success ?></div>
+    <?php endif; ?>
+
+    <form method="post" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Bracket Name</label>
+            <input type="text" name="bracketName" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Bracket ID (Unique Identifier)</label>
+            <input type="text" name="bracketId" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Age Bracket</label>
+            <select name="age" class="form-select" required>
+                <option value="">Select Age Bracket...</option>
+                <?php foreach ($this->ages as $age): ?>
+                    <option value="<?= $age->getId() ?>"><?= $this->escapeHtml($age->getAgeBracket()) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Language</label>
+            <select name="language" class="form-select" required>
+                <option value="">Select Language...</option>
+                <?php foreach ($this->languages as $lang): ?>
+                    <option value="<?= $lang->getId() ?>"><?= $this->escapeHtml($lang->getLanguage()) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Background ID (Optional)</label>
+            <input type="text" name="bgId" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description (Optional)</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Create Bracket</button>
+        <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+    </form>
+</div>

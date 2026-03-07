@@ -1,0 +1,18 @@
+<div class="container mt-5">
+    <h2>Edit Game Type</h2>
+    <?php if ($this->error): ?>
+        <div class="alert alert-danger"><?= $this->error ?></div>
+    <?php endif; ?>
+    <?php if ($this->success): ?>
+        <div class="alert alert-success"><?= $this->success ?></div>
+    <?php endif; ?>
+
+    <form method="post" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Game Type Name</label>
+            <input type="text" name="type" class="form-control" value="<?= $this->escapeHtml($this->gameType->getType()) ?>" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Type</button>
+        <a href="<?= $this->url('admin', ['action' => 'view-game-types']) ?>" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>

@@ -123,6 +123,8 @@ class IndexController extends AbstractActionController
 
             // print($teacherIds);
 
+            $studentAgeId = $data['studentAge'] ?? null;
+            $studentAge = $studentAgeId ? $em->getRepository(\Application\Entity\GameAgeBracket::class)->find($studentAgeId) : null;
             $teacher = $em->getRepository(Teacher::class)->findOneBy(['teacherId' => $data['teacherid']]);
 
             
@@ -130,7 +132,7 @@ class IndexController extends AbstractActionController
             $student->setStudentName($studentName)->setStudentId($studentId)
                 ->setIsDyslexic($isDyslaxic)
                 ->setUuid(Uuid::uuid4()->toString())
-                ->setStudentAge($data['studentAge'] ?? null)
+                ->setStudentAge($studentAge)
                 ->setTeacherId($teacher)
                 ->setCreatedAt(new \DateTime())
                 ->setUpdatedAt(new \DateTime());
@@ -180,7 +182,8 @@ class IndexController extends AbstractActionController
 
     public function registerStudentAction()
     {
-        return new ViewModel();
+        $brackets = $this->em->getRepository(\Application\Entity\GameAgeBracket::class)->findAll();
+        return new ViewModel(['brackets' => $brackets]);
     }
 
 
@@ -224,8 +227,8 @@ class IndexController extends AbstractActionController
                 'data' => [
                     'studentName' => $student->getStudentName(),
                     'isDyslexic' => $student->getIsDyslexic(),
-                    'studentAge' => $student->getStudentAge(),
-                    'teacherId' => $student->getTeacherId()->getTeacherId(),
+                    'studentAge' => $student->getStudentAge() ? $student->getStudentAge()->getAgeBracket() : null,
+                    'teacherId' => $student->getTeacherId() ? $student->getTeacherId()->getTeacherId() : null,
                    'uuid'=>$student->getUuid(),
                    'id'=>$student->getStudentId()
                    

@@ -23,7 +23,9 @@ class Student
     private $studentName;
 
     /**
-     * @ORM\Column(name="student_age", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="GameAgeBracket")
+     * @ORM\JoinColumn(name="student_age", referencedColumnName="id")
+     * @var GameAgeBracket
      */
     private $studentAge;
 

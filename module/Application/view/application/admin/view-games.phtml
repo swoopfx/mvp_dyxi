@@ -1,0 +1,36 @@
+<div class="container mt-5">
+    <h2>View Games</h2>
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Page</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($this->games) > 0): ?>
+                    <?php foreach ($this->games as $game): ?>
+                    <tr>
+                        <td><?= $game->getId() ?></td>
+                        <td><?= $this->escapeHtml($game->getGameName()) ?></td>
+                        <td><?= $this->escapeHtml($game->getGamePage()) ?></td>
+                        <td><?= $game->getGameCategory() ? $this->escapeHtml($game->getGameCategory()->getGameCategory()) : 'N/A' ?></td>
+                        <td><?= $game->getGamesType() ? $this->escapeHtml($game->getGamesType()->getType()) : 'N/A' ?></td>
+                        <td>
+                            <a href="<?= $this->url('admin', ['action' => 'edit-game']) ?>?id=<?= $game->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="6" class="text-center">No games found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+</div>

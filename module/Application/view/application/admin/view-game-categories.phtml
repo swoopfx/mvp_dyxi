@@ -1,0 +1,30 @@
+<div class="container mt-5">
+    <h2>View Game Categories</h2>
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($this->categories) > 0): ?>
+                    <?php foreach ($this->categories as $category): ?>
+                    <tr>
+                        <td><?= $category->getId() ?></td>
+                        <td><?= $this->escapeHtml($category->getGameCategory()) ?></td>
+                        <td>
+                            <a href="<?= $this->url('admin', ['action' => 'edit-game-category']) ?>?id=<?= $category->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="3" class="text-center">No game categories found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+</div>

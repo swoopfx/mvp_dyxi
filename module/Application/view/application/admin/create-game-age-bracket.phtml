@@ -1,0 +1,18 @@
+<div class="container mt-5">
+    <h2>Create Game Age Bracket</h2>
+    <?php if ($this->error): ?>
+        <div class="alert alert-danger"><?= $this->error ?></div>
+    <?php endif; ?>
+    <?php if ($this->success): ?>
+        <div class="alert alert-success"><?= $this->success ?></div>
+    <?php endif; ?>
+
+    <form method="post" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Age Bracket</label>
+            <input type="text" name="ageBracket" class="form-control" placeholder="e.g. 5-7 years, 8-10 years" required>
+        </div>
+        <button type="submit" class="btn btn-success">Create Age Bracket</button>
+        <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+    </form>
+</div>

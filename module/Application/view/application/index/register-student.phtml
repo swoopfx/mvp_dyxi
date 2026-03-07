@@ -6,8 +6,13 @@
     </div>
 
     <div class="mb-3">
-        <label for="studentage" class="form-label">Student Age</label>
-        <input type="number" ref="studentAge" class="form-control" id="studentage" aria-describedby="studentHelp" placeholder="Enter student age">
+        <label for="studentage" class="form-label">Student Age Bracket</label>
+        <select ref="studentAge" class="form-control" id="studentage">
+            <option value="">Select Age Bracket</option>
+            <?php foreach ($this->brackets ?? [] as $bracket): ?>
+                <option value="<?= $bracket->getId() ?>"><?= $this->escapeHtml($bracket->getAgeBracket()) ?></option>
+            <?php endforeach; ?>
+        </select>
         <div id="studentHelp" class="form-text">We'll never share your student age with anyone else.</div>
     </div>
 

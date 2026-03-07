@@ -1,0 +1,56 @@
+<div class="container mt-5">
+    <h2>Edit Game</h2>
+    <?php if ($this->error): ?>
+        <div class="alert alert-danger"><?= $this->error ?></div>
+    <?php endif; ?>
+    <?php if ($this->success): ?>
+        <div class="alert alert-success"><?= $this->success ?></div>
+    <?php endif; ?>
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">Game Name</label>
+            <input type="text" name="gameName" class="form-control" value="<?= $this->game ? $this->escapeHtml($this->game->getGameName()) : '' ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Game Page</label>
+            <input type="text" name="gamePage" class="form-control" value="<?= $this->game ? $this->escapeHtml($this->game->getGamePage()) : '' ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Game Type</label>
+            <select name="gameType" class="form-select" required>
+                <?php foreach ($this->gameTypes as $type): ?>
+                    <option value="<?= $type->getId() ?>" <?= ($this->game && $this->game->getGamesType() && $this->game->getGamesType()->getId() == $type->getId()) ? 'selected' : '' ?>>
+                        <?= $this->escapeHtml($type->getType()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Game Category</label>
+            <select name="gameCategory" class="form-select" required>
+                <?php foreach ($this->gameCategories as $cat): ?>
+                    <option value="<?= $cat->getId() ?>" <?= ($this->game && $this->game->getGameCategory() && $this->game->getGameCategory()->getId() == $cat->getId()) ? 'selected' : '' ?>>
+                        <?= $this->escapeHtml($cat->getGameCategory()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Game Bracket</label>
+            <select name="gameBracket" class="form-select" required>
+                <?php foreach ($this->gameBrackets as $bracket): ?>
+                    <option value="<?= $bracket->getId() ?>" <?= ($this->game && $this->game->getGameBracket() && $this->game->getGameBracket()->getId() == $bracket->getId()) ? 'selected' : '' ?>>
+                        <?= $this->escapeHtml($bracket->getBracketName()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Game Definition</label>
+            <textarea name="gameDefinition" class="form-control" rows="4" required><?= $this->game ? $this->escapeHtml($this->game->getGameDefinition()) : '' ?></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Game</button>
+        <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
+    </form>
+</div>

@@ -16,7 +16,7 @@ class GeneralFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         // For example:
         // $someService = $container->get(SomeService::class);  
         $xservice->setEntityManager($container->get(EntityManager::class));
-        $xservice->setRedisManager($container->get(Redis::class));
+        $xservice->setRedisManager($container->get("dyxiredis"));
         return $xservice;
     }
 }

@@ -24,4 +24,19 @@ class GameCategory
      */
     private $gameCategory; // ADHD or Dyslexia
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getGameCategory()
+    {
+        return $this->gameCategory;
+    }
+
+    public function setGameCategory($gameCategory)
+    {
+        $this->gameCategory = $gameCategory;
+        return $this;
+    }
 }

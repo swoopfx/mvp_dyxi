@@ -1,0 +1,38 @@
+<div class="container mt-5">
+    <h2>Edit Student</h2>
+    <?php if ($this->error): ?>
+        <div class="alert alert-danger"><?= $this->error ?></div>
+    <?php endif; ?>
+    <?php if ($this->success): ?>
+        <div class="alert alert-success"><?= $this->success ?></div>
+    <?php endif; ?>
+
+    <form method="post" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Student Name</label>
+            <input type="text" name="studentName" class="form-control" value="<?= $this->escapeHtml($this->student->getStudentName()) ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Student ID</label>
+            <input type="text" name="studentId" class="form-control" value="<?= $this->escapeHtml($this->student->getStudentId()) ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Student Age Bracket</label>
+            <select name="studentAge" class="form-control" required>
+                <option value="">Select Age Bracket</option>
+                <?php $currentAgeId = $this->student->getStudentAge() ? $this->student->getStudentAge()->getId() : ''; ?>
+                <?php foreach ($this->ages ?? [] as $bracket): ?>
+                    <option value="<?= $bracket->getId() ?>" <?= $currentAgeId === $bracket->getId() ? 'selected' : '' ?>>
+                        <?= $this->escapeHtml($bracket->getAgeBracket()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="isDyslexic" class="form-check-input" id="dyslexicCheck" <?= $this->student->getIsDyslexic() ? 'checked' : '' ?>>
+            <label class="form-check-label" for="dyslexicCheck">Is Dyslexic?</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Student</button>
+        <a href="<?= $this->url('admin', ['action' => 'view-student']) ?>" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>
