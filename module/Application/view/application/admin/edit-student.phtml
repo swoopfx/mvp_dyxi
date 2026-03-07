@@ -28,6 +28,18 @@
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Language</label>
+            <select name="language" class="form-control" required>
+                <option value="">Select Language</option>
+                <?php $currentLangId = $this->student->getLanguage() ? $this->student->getLanguage()->getId() : ''; ?>
+                <?php foreach ($this->languages ?? [] as $lang): ?>
+                    <option value="<?= $lang->getId() ?>" <?= $currentLangId === $lang->getId() ? 'selected' : '' ?>>
+                        <?= $this->escapeHtml($lang->getLanguage()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
         <div class="mb-3 form-check">
             <input type="checkbox" name="isDyslexic" class="form-check-input" id="dyslexicCheck" <?= $this->student->getIsDyslexic() ? 'checked' : '' ?>>
             <label class="form-check-label" for="dyslexicCheck">Is Dyslexic?</label>

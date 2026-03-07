@@ -70,7 +70,7 @@ $this->headTitle($title);
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group mb-3">
                         <label for="gameBracket" class="form-label fw-bold">Game Bracket</label>
                         <select class="form-select form-control" id="gameBracket" name="gameBracket" required>
@@ -78,6 +78,20 @@ $this->headTitle($title);
                             <?php foreach ($this->gameBrackets as $bracket): ?>
                                 <option value="<?= $this->escapeHtmlAttr($bracket->getId()) ?>">
                                     <?= $this->escapeHtml($bracket->getBracketName() ?: $bracket->getBracketId() ?: 'ID: ' . $bracket->getId()) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="language" class="form-label fw-bold">Language</label>
+                        <select class="form-select form-control" id="language" name="language" required>
+                            <option value="">-- Select Language --</option>
+                            <?php foreach ($this->gameLanguages as $lang): ?>
+                                <option value="<?= $this->escapeHtmlAttr($lang->getId()) ?>">
+                                    <?= $this->escapeHtml($lang->getLanguage() ?: 'ID: ' . $lang->getId()) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

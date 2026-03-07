@@ -73,6 +73,14 @@ class Student
      */
     private $teacherId;
 
+    /**
+     * Summary of language
+     * @ORM\ManyToOne(targetEntity="GameLanguage")
+     * @ORM\JoinColumn(name="language_id", referencedColumnName="id")
+     * @var GameLanguage
+     */
+    private $language;
+
 
 
 
@@ -256,6 +264,18 @@ class Student
     public function setStudentAge($studentAge)
     {
         $this->studentAge = $studentAge;
+
+        return $this;
+    }
+
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    public function setLanguage($language)
+    {
+        $this->language = $language;
 
         return $this;
     }

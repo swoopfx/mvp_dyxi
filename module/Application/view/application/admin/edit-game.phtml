@@ -47,6 +47,16 @@
             </select>
         </div>
         <div class="mb-3">
+            <label class="form-label">Language</label>
+            <select name="language" class="form-select" required>
+                <?php foreach ($this->gameLanguages as $lang): ?>
+                    <option value="<?= $lang->getId() ?>" <?= ($this->game && $this->game->getLanguage() && $this->game->getLanguage()->getId() == $lang->getId()) ? 'selected' : '' ?>>
+                        <?= $this->escapeHtml($lang->getLanguage()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
             <label class="form-label">Game Definition</label>
             <textarea name="gameDefinition" class="form-control" rows="4" required><?= $this->game ? $this->escapeHtml($this->game->getGameDefinition()) : '' ?></textarea>
         </div>

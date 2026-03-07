@@ -125,6 +125,8 @@ class IndexController extends AbstractActionController
 
             $studentAgeId = $data['studentAge'] ?? null;
             $studentAge = $studentAgeId ? $em->getRepository(\Application\Entity\GameAgeBracket::class)->find($studentAgeId) : null;
+            $languageId = $data['language'] ?? null;
+            $language = $languageId ? $em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId) : null;
             $teacher = $em->getRepository(Teacher::class)->findOneBy(['teacherId' => $data['teacherid']]);
 
             
@@ -133,6 +135,7 @@ class IndexController extends AbstractActionController
                 ->setIsDyslexic($isDyslaxic)
                 ->setUuid(Uuid::uuid4()->toString())
                 ->setStudentAge($studentAge)
+                ->setLanguage($language)
                 ->setTeacherId($teacher)
                 ->setCreatedAt(new \DateTime())
                 ->setUpdatedAt(new \DateTime());
@@ -183,7 +186,8 @@ class IndexController extends AbstractActionController
     public function registerStudentAction()
     {
         $brackets = $this->em->getRepository(\Application\Entity\GameAgeBracket::class)->findAll();
-        return new ViewModel(['brackets' => $brackets]);
+        $languages = $this->em->getRepository(\Application\Entity\GameLanguage::class)->findAll();
+        return new ViewModel(['brackets' => $brackets, 'languages' => $languages]);
     }
 
 
@@ -228,6 +232,7 @@ class IndexController extends AbstractActionController
                     'studentName' => $student->getStudentName(),
                     'isDyslexic' => $student->getIsDyslexic(),
                     'studentAge' => $student->getStudentAge() ? $student->getStudentAge()->getAgeBracket() : null,
+                    'language' => $student->getLanguage() ? $student->getLanguage()->getLanguage() : null,
                     'teacherId' => $student->getTeacherId() ? $student->getTeacherId()->getTeacherId() : null,
                    'uuid'=>$student->getUuid(),
                    'id'=>$student->getStudentId()

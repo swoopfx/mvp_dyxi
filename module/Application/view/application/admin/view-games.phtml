@@ -9,6 +9,7 @@
                     <th>Page</th>
                     <th>Category</th>
                     <th>Type</th>
+                    <th>Language</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -21,13 +22,14 @@
                         <td><?= $this->escapeHtml($game->getGamePage()) ?></td>
                         <td><?= $game->getGameCategory() ? $this->escapeHtml($game->getGameCategory()->getGameCategory()) : 'N/A' ?></td>
                         <td><?= $game->getGamesType() ? $this->escapeHtml($game->getGamesType()->getType()) : 'N/A' ?></td>
+                        <td><?= $game->getLanguage() ? $this->escapeHtml($game->getLanguage()->getLanguage()) : 'N/A' ?></td>
                         <td>
                             <a href="<?= $this->url('admin', ['action' => 'edit-game']) ?>?id=<?= $game->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="6" class="text-center">No games found.</td></tr>
+                    <tr><td colspan="7" class="text-center">No games found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

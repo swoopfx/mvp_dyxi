@@ -17,6 +17,17 @@
     </div>
 
     <div class="mb-3">
+        <label for="studentlanguage" class="form-label">Language</label>
+        <select ref="language" class="form-control" id="studentlanguage">
+            <option value="">Select Language</option>
+            <?php foreach ($this->languages ?? [] as $lang): ?>
+                <option value="<?= $lang->getId() ?>"><?= $this->escapeHtml($lang->getLanguage()) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <div id="languageHelp" class="form-text">We'll never share your selected language with anyone else.</div>
+    </div>
+
+    <div class="mb-3">
         <label for="teacherid" class="form-label">Teacher ID</label>
         <input type="text" ref="teacherId" class="form-control" id="teacherid" aria-describedby="teacherHelp" placeholder="Enter teacher ID">
         <div id="teacherHelp" class="form-text">We'll never share your teacher ID with anyone else.</div>

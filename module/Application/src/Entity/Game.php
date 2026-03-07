@@ -89,6 +89,13 @@ class Game
      */
     private $gameBracket;
 
+    /**
+     * Undocumented variable
+     * @ORM\ManyToOne(targetEntity="GameLanguage")
+     * @var GameLanguage
+     */
+    private $language;
+
     public function getId()
     {
         return $this->id;
@@ -291,6 +298,18 @@ class Game
     public function setGameBracket(GameBracket $gameBracket)
     {
         $this->gameBracket = $gameBracket;
+
+        return $this;
+    }
+
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    public function setLanguage($language)
+    {
+        $this->language = $language;
 
         return $this;
     }

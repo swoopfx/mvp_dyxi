@@ -58,16 +58,18 @@ class AdminController extends AbstractActionController
             $gameCategoryId = $data['gameCategory'] ?? null;
             $gameDefinition = trim($data['gameDefinition'] ?? '');
             $gameBracketId = $data['gameBracket'] ?? null;
+            $languageId = $data['language'] ?? null;
 
-            if (empty($gameName) || empty($gamePage) || empty($gameTypeId) || empty($gameCategoryId) || empty($gameDefinition) || empty($gameBracketId)) {
+            if (empty($gameName) || empty($gamePage) || empty($gameTypeId) || empty($gameCategoryId) || empty($gameDefinition) || empty($gameBracketId) || empty($languageId)) {
                 $error = 'All fields are required.';
             } else {
                 $gameType = $em->getRepository(GameType::class)->find($gameTypeId);
                 $gameCategory = $em->getRepository(GameCategory::class)->find($gameCategoryId);
                 $gameBracket = $em->getRepository(GameBracket::class)->find($gameBracketId);
+                $language = $em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId);
 
-                if (!$gameType || !$gameCategory || !$gameBracket) {
-                    $error = 'Invalid selection for Game Type, Category, or Bracket.';
+                if (!$gameType || !$gameCategory || !$gameBracket || !$language) {
+                    $error = 'Invalid selection for Game Type, Category, Bracket, or Language.';
                 } else {
                     $game = new Game();
                     $game->setGameName($gameName)
@@ -76,6 +78,7 @@ class AdminController extends AbstractActionController
                          ->setGameCategory($gameCategory)
                          ->setGameDefinition($gameDefinition)
                          ->setGameBracket($gameBracket)
+                         ->setLanguage($language)
                          ->setUuid(Uuid::uuid4()->toString())
                          ->setCreatedAt(new \DateTime())
                          ->setUpdatedAt(new \DateTime());
@@ -90,11 +93,13 @@ class AdminController extends AbstractActionController
                 }
             }
         }
+        $gameLanguages = $em->getRepository(\Application\Entity\GameLanguage::class)->findAll();
 
         return new ViewModel([
             'gameTypes' => $gameTypes,
             'gameCategories' => $gameCategories,
             'gameBrackets' => $gameBrackets,
+            'gameLanguages' => $gameLanguages,
             'error' => $error,
             'success' => $success
         ]);
@@ -115,6 +120,7 @@ class AdminController extends AbstractActionController
         $gameTypes = $em->getRepository(GameType::class)->findAll();
         $gameCategories = $em->getRepository(GameCategory::class)->findAll();
         $gameBrackets = $em->getRepository(GameBracket::class)->findAll();
+        $gameLanguages = $em->getRepository(\Application\Entity\GameLanguage::class)->findAll();
 
         $request = $this->getRequest();
         if ($request->isPost()) {
@@ -126,16 +132,18 @@ class AdminController extends AbstractActionController
             $gameCategoryId = $data['gameCategory'] ?? null;
             $gameDefinition = trim($data['gameDefinition'] ?? '');
             $gameBracketId = $data['gameBracket'] ?? null;
+            $languageId = $data['language'] ?? null;
 
-            if (empty($gameName) || empty($gamePage) || empty($gameTypeId) || empty($gameCategoryId) || empty($gameDefinition) || empty($gameBracketId)) {
+            if (empty($gameName) || empty($gamePage) || empty($gameTypeId) || empty($gameCategoryId) || empty($gameDefinition) || empty($gameBracketId) || empty($languageId)) {
                 $error = 'All fields are required.';
             } else {
                 $gameType = $em->getRepository(GameType::class)->find($gameTypeId);
                 $gameCategory = $em->getRepository(GameCategory::class)->find($gameCategoryId);
                 $gameBracket = $em->getRepository(GameBracket::class)->find($gameBracketId);
+                $language = $em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId);
 
-                if (!$gameType || !$gameCategory || !$gameBracket) {
-                    $error = 'Invalid selection for Game Type, Category, or Bracket.';
+                if (!$gameType || !$gameCategory || !$gameBracket || !$language) {
+                    $error = 'Invalid selection for Game Type, Category, Bracket, or Language.';
                 } else {
                     $game->setGameName($gameName)
                          ->setGamePage($gamePage)
@@ -143,6 +151,7 @@ class AdminController extends AbstractActionController
                          ->setGameCategory($gameCategory)
                          ->setGameDefinition($gameDefinition)
                          ->setGameBracket($gameBracket)
+                         ->setLanguage($language)
                          ->setUpdatedAt(new \DateTime());
                          
                     try {
@@ -160,6 +169,7 @@ class AdminController extends AbstractActionController
             'gameTypes' => $gameTypes,
             'gameCategories' => $gameCategories,
             'gameBrackets' => $gameBrackets,
+            'gameLanguages' => $gameLanguages,
             'error' => $error,
             'success' => $success
         ]);
@@ -611,21 +621,25 @@ class AdminController extends AbstractActionController
         $success = null;
 
         $ages = $this->em->getRepository(\Application\Entity\GameAgeBracket::class)->findAll();
+        $languages = $this->em->getRepository(\Application\Entity\GameLanguage::class)->findAll();
 
         if ($request->isPost()) {
             $data = $request->getPost();
             $studentName = trim($data['studentName'] ?? '');
             $studentId = trim($data['studentId'] ?? '');
             $studentAgeId = trim($data['studentAge'] ?? '');
+            $languageId = trim($data['language'] ?? '');
             $isDyslexic = isset($data['isDyslexic']) ? true : false;
             
-            if (empty($studentName) || empty($studentId) || empty($studentAgeId)) {
-                $error = 'Student Name, Student ID, and Age Bracket are required.';
+            if (empty($studentName) || empty($studentId) || empty($studentAgeId) || empty($languageId)) {
+                $error = 'Student Name, Student ID, Age Bracket, and Language are required.';
             } else {
                 $studentAge = $this->em->getRepository(\Application\Entity\GameAgeBracket::class)->find($studentAgeId);
+                $language = $this->em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId);
                 $student->setStudentName($studentName)
                         ->setStudentId($studentId)
                         ->setStudentAge($studentAge)
+                        ->setLanguage($language)
                         ->setIsDyslexic($isDyslexic)
                         ->setUpdatedAt(new \DateTime());
                 
@@ -641,6 +655,7 @@ class AdminController extends AbstractActionController
         return new ViewModel([
             'student' => $student,
             'ages' => $ages,
+            'languages' => $languages,
             'error' => $error,
             'success' => $success
         ]);

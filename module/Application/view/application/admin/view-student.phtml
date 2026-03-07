@@ -8,6 +8,7 @@
                     <th>Student Name</th>
                     <th>Student ID</th>
                     <th>Age</th>
+                    <th>Language</th>
                     <th>Dyslexic?</th>
                     <th>Options</th>
                 </tr>
@@ -20,6 +21,7 @@
                         <td><?= $this->escapeHtml($student->getStudentName()) ?></td>
                         <td><?= $this->escapeHtml($student->getStudentId()) ?></td>
                         <td><?= $student->getStudentAge() ? $this->escapeHtml($student->getStudentAge()->getAgeBracket()) : '' ?></td>
+                        <td><?= $student->getLanguage() ? $this->escapeHtml($student->getLanguage()->getLanguage()) : '' ?></td>
                         <td><?= $student->getIsDyslexic() ? 'Yes' : 'No' ?></td>
                         <td>
                             <a href="<?= $this->url('admin', ['action' => 'edit-student']) ?>?id=<?= $student->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
@@ -27,7 +29,7 @@
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="6" class="text-center">No students found.</td></tr>
+                    <tr><td colspan="7" class="text-center">No students found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
