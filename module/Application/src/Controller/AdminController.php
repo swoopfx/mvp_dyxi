@@ -44,6 +44,7 @@ class AdminController extends AbstractActionController
         $gameTypes = $em->getRepository(GameType::class)->findAll();
         $gameCategories = $em->getRepository(GameCategory::class)->findAll();
         $gameBrackets = $em->getRepository(GameBracket::class)->findAll();
+        $gameAgeBrackets = $em->getRepository(GameAgeBracket::class)->findAll();
 
         $request = $this->getRequest();
         $error = null;
@@ -98,7 +99,7 @@ class AdminController extends AbstractActionController
         return new ViewModel([
             'gameTypes' => $gameTypes,
             'gameCategories' => $gameCategories,
-            'gameBrackets' => $gameBrackets,
+            'gameBrackets' => $gameAgeBrackets,
             'gameLanguages' => $gameLanguages,
             'error' => $error,
             'success' => $success
