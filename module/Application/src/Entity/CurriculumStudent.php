@@ -37,6 +37,12 @@ class CurriculumStudent
      */
     private $curriculumId;
 
+
+    /**
+     * @ORM\Column(name="description", type="text", columnDefinition="LONGTEXT", nullable=true)
+     * @var string
+     */
+    private $description;
     /**
      * Unique Identifyer for curriculum student
      * @ORM\Column(name="uuid", type="string", length=255, unique=true)
@@ -173,6 +179,17 @@ class CurriculumStudent
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;
+        return $this;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
         return $this;
     }
 }

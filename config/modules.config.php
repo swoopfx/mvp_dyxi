@@ -31,4 +31,5 @@ return [
     'Laminas\Diactoros',
     'Laminas\Cache\Storage\Adapter\Redis',
     'Application',
+    'Api',
 ];
