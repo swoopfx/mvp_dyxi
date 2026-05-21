@@ -1,50 +1,121 @@
 <div class="container mt-5">
-    <h2>Search Students</h2>
-    
-    <div class="card mb-4 shadow-sm border-0">
-        <div class="card-body">
-            <form method="get" action="<?= $this->url('admin', ['action' => 'search-student']) ?>" class="d-flex">
-                <input type="text" name="q" class="form-control me-2" placeholder="Search by Student Name or Student ID..." value="<?= $this->escapeHtml($this->query) ?>">
-                <button type="submit" class="btn btn-primary">Search</button>
-                <a href="<?= $this->url('admin', ['action' => 'search-student']) ?>" class="btn btn-outline-secondary ms-2">Reset</a>
-            </form>
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                <div class="card-header bg-gradient-primary text-white p-4" style="background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1 text-white font-weight-bold">Search Students</h3>
+                            <p class="mb-0 text-white-50 small">Filter registered students by credentials, age brackets, or dyslexia diagnosis status.</p>
+                        </div>
+                        <i class="bi bi-search fs-2 text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Search Form -->
+                    <form method="get" action="<?= $this->url('admin', ['action' => 'search-student']) ?>" class="mb-4">
+                        <div class="row g-2 justify-content-center">
+                            <div class="col-md-8">
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
+                                    <input type="text" name="q" class="form-control border-0" placeholder="Search by Student Name or Student ID..." value="<?= $this->escapeHtml($this->query ?? '') ?>" style="padding: 12px 15px; outline: none; box-shadow: none;">
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary px-4 w-100 font-weight-semibold shadow-sm" style="background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%); border: none; border-radius: 8px;">
+                                    Filter Results
+                                </button>
+                                <?php if (!empty($this->query)): ?>
+                                    <a href="<?= $this->url('admin', ['action' => 'search-student']) ?>" class="btn btn-outline-secondary px-3 d-flex align-items-center justify-content-center" style="border-radius: 8px;">
+                                        Reset
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive" style="border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted uppercase font-weight-semibold small">
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Student Details</th>
+                                    <th>Student ID Code</th>
+                                    <th>Age & Bracket</th>
+                                    <th>Language</th>
+                                    <th>Dyslexia Indicator</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (count($this->students ?? []) > 0): ?>
+                                    <?php foreach ($this->students as $student): ?>
+                                        <tr>
+                                            <td class="ps-4 text-muted small">#<?= $student->getId() ?></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle me-3 d-flex align-items-center justify-content-center text-white bg-primary font-weight-semibold shadow-sm" style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);">
+                                                        <?= strtoupper(substr($student->getStudentName() ?: 'S', 0, 1)) ?>
+                                                    </div>
+                                                    <div>
+                                                        <span class="font-weight-semibold d-block" style="color: #1e293b;"><?= $this->escapeHtml($student->getStudentName()) ?></span>
+                                                        <span class="text-muted small">Registered Student</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <code class="px-2 py-1 bg-light text-secondary rounded small"><?= $this->escapeHtml($student->getStudentId()) ?></code>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span class="font-weight-semibold text-dark" style="font-size: 0.95rem;"><?= $student->getAge() ? $this->escapeHtml($student->getAge()) . ' yrs' : 'N/A' ?></span>
+                                                    <span class="text-muted small"><?= $student->getStudentAge() ? $this->escapeHtml($student->getStudentAge()->getAgeBracket()) : '' ?></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-soft-primary text-primary px-3 py-1.5 font-weight-semibold" style="background-color: #eff6ff; color: #2563eb; border-radius: 6px;">
+                                                    <?= $student->getLanguage() ? $this->escapeHtml($student->getLanguage()->getLanguage()) : 'N/A' ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <?php if ($student->getIsDyslexic()): ?>
+                                                    <span class="badge px-3 py-1.5 font-weight-semibold" style="background-color: #fee2e2; color: #dc2626; border-radius: 6px;">
+                                                        <i class="bi bi-exclamation-circle-fill me-1"></i> Dyslexic
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge px-3 py-1.5 font-weight-semibold" style="background-color: #d1fae5; color: #059669; border-radius: 6px;">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> Non-Dyslexic
+                                                    </span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="<?= $this->url('application', ['action' => 'edit-student']) ?>?id=<?= $student->getId() ?>" class="btn btn-sm btn-primary px-3 shadow-sm" style="border-radius: 6px; background-color: #3b82f6; border: none;">
+                                                    <i class="bi bi-pencil-square me-1"></i> Edit
+                                                    </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-person-exclamation fs-1 d-block mb-3 text-muted-300"></i>
+                                            No students matched your search query.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                    <a href="<?= $this->url('admin') ?>" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;">
+                        <i class="bi bi-arrow-left me-2"></i> Admin Panel
+                    </a>
+                    <span class="text-muted small">Found: <?= count($this->students ?? []) ?> matching records.</span>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="table-responsive mt-4">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Student Name</th>
-                    <th>Student ID</th>
-                    <th>Age</th>
-                    <th>Language</th>
-                    <th>Dyslexic?</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($this->students) > 0): ?>
-                    <?php foreach ($this->students as $student): ?>
-                    <tr>
-                        <td><?= $student->getId() ?></td>
-                        <td><?= $this->escapeHtml($student->getStudentName()) ?></td>
-                        <td><?= $this->escapeHtml($student->getStudentId()) ?></td>
-                        <td><?= $student->getStudentAge() ? $this->escapeHtml($student->getStudentAge()->getAgeBracket()) : '' ?></td>
-                        <td><?= $student->getLanguage() ? $this->escapeHtml($student->getLanguage()->getLanguage()) : '' ?></td>
-                        <td><?= $student->getIsDyslexic() ? 'Yes' : 'No' ?></td>
-                        <td>
-                            <a href="<?= $this->url('admin', ['action' => 'edit-student']) ?>?id=<?= $student->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr><td colspan="7" class="text-center">No students found matching your query.</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-
-    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary mt-3">Back to Dashboard</a>
 </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

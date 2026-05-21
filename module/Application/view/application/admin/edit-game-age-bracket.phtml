@@ -12,6 +12,24 @@
             <label class="form-label">Age Bracket</label>
             <input type="text" name="ageBracket" class="form-control" value="<?= $this->escapeHtml($this->ageBracket->getAgeBracket()) ?>" required>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Age Lower Bound</label>
+            <select name="ageLowerBound" class="form-control" required>
+                <option value="">Select Lower Bound</option>
+                <?php for($i=1; $i<=16; $i++): ?>
+                    <option value="<?= $i ?>" <?= $this->ageBracket->getAgeLowerBound() == $i ? 'selected' : '' ?>><?= $i ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Age Upper Bound</label>
+            <select name="ageUpperBound" class="form-control" required>
+                <option value="">Select Upper Bound</option>
+                <?php for($i=1; $i<=16; $i++): ?>
+                    <option value="<?= $i ?>" <?= $this->ageBracket->getAgeUpperBound() == $i ? 'selected' : '' ?>><?= $i ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Update Age Bracket</button>
         <a href="<?= $this->url('admin', ['action' => 'view-game-age-brackets']) ?>" class="btn btn-secondary">Back to List</a>
     </form>

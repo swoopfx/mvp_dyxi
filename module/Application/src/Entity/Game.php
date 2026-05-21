@@ -2,9 +2,13 @@
 
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Application\Entity\GameType;
-use Application\Entity\GameBracket;
+// use Application\Entity\GameBracket;
+use Application\Entity\GameAgeBracket;
+use Application\Entity\GameLanguage;
+use DoctrineModule\Paginator\Adapter\Collection;
 
 /**
  * GameBracketDefinition
@@ -38,8 +42,8 @@ class Game
 
     /**
      * Undocumented variable
-     * @ORM\ManyToOne(targetEntity="GameType")
-     * @var GameType
+     * @ORM\OneToMany(targetEntity="GameTypeCollection", mappedBy="games" , orphanRemoval=true,  cascade={"persist", "remove"})
+     * @var \Doctrine\Common\Collections\Collection
      */
     private $gamesType; // phonological, Speaking Test, writing Test
 
@@ -47,8 +51,8 @@ class Game
     /**
      * Defines if ADHD or dyslexia
      *
-     * @var GameCategory
-     * @ORM\ManyToOne(targetEntity="GameCategory")
+     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\OneToMany(targetEntity="GameCategoryCollection", mappedBy="game", orphanRemoval=true,  cascade={"persist", "remove"})
      */
     private $gameCategory; // ADHD or Dyslexia
 
@@ -84,10 +88,10 @@ class Game
     /**
      * Undocumented variable
      * 
-     * @var GameBracket
-     * @ORM\ManyToOne(targetEntity="GameBracket")
+     * @var GameAgeBracket
+     * @ORM\ManyToOne(targetEntity="GameAgeBracket")
      */
-    private $gameBracket;
+    private $gameAgeBracket;
 
     /**
      * Undocumented variable
@@ -163,7 +167,7 @@ class Game
     }
 
     /**
-     * Get undocumented variable
+     * Get undocumented variabless
      *
      * @return  GameType
      */
@@ -281,23 +285,23 @@ class Game
     /**
      * Get undocumented variable
      *
-     * @return  GameBracket
+     * @return  GameAgeBracket
      */ 
-    public function getGameBracket()
+    public function getGameAgeBracket()
     {
-        return $this->gameBracket;
+        return $this->gameAgeBracket;
     }
 
     /**
      * Set undocumented variable
      *
-     * @param  GameBracket  $gameBracket  Undocumented variable
+     * @param  GameAgeBracket  $gameAgeBracket  Undocumented variable
      *
      * @return  self
      */ 
-    public function setGameBracket(GameBracket $gameBracket)
+    public function setGameAgeBracket(GameAgeBracket $gameAgeBracket)
     {
-        $this->gameBracket = $gameBracket;
+        $this->gameAgeBracket = $gameAgeBracket;
 
         return $this;
     }
@@ -313,4 +317,51 @@ class Game
 
         return $this;
     }
+
+    public function addGameType($gameType)
+    {
+        if(!$this->gamesType->contains($gameType)){
+            $this->gamesType->add($gameType);
+        }
+        return $this;
+    }
+
+    public function removeGameType($gameType)
+    {
+        $this->gamesType->removeElement($gameType);
+        // $gameType->setGames(null);
+        return $this;
+    }
+
+    public function getGameTypes()
+    {
+        return $this->gamesType;
+    }
+
+    public function addGameCategory($gameCategory)
+    {
+        if(!$this->gameCategory->contains($gameCategory)){
+            $this->gameCategory->add($gameCategory);
+        }
+        return $this;
+    }
+    public function removeGameCategory($gameCategory)
+    {
+        $this->gameCategory->removeElement($gameCategory);
+        // $gameCategory->setGame(null);
+        return $this;
+    }
+
+    public function getGameCategories()
+    {
+        return $this->gameCategory;
+    }
+
+    public function __construct(){
+        $this->gamesType = new ArrayCollection();
+        $this->gameCategory = new ArrayCollection();
+    }
 }
+    
+
+

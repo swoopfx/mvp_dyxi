@@ -1,43 +1,103 @@
-<form>
-    <div class="mb-3">
-        <label for="studentname" class="form-label">Student Name</label>
-        <input type="text" ref="studentName" class="form-control" id="studentname" aria-describedby="studentHelp" placeholder="Enter student name">
-        <div id="studentHelp" class="form-text">We'll never share your student name with anyone else.</div>
-    </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                <div class="card-header bg-gradient-primary text-white p-4" style="background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1 text-white font-weight-bold">Register Student</h3>
+                            <p class="mb-0 text-white-50 small">Configure and register student profile information, dyslexia indicator, and teacher mappings.</p>
+                        </div>
+                        <i class="bi bi-person-plus-fill fs-2 text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <form>
+                        <div class="row g-4">
+                            <!-- Student Name -->
+                            <div class="col-md-6">
+                                <label for="studentname" class="form-label font-weight-semibold text-muted small uppercase">Student Name</label>
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-person text-muted"></i></span>
+                                    <input type="text" ref="studentName" class="form-control bg-light border-0" id="studentname" placeholder="Enter student name" style="padding: 10px 15px;">
+                                </div>
+                                <div class="form-text text-muted-400 small mt-1">Provide the student's legal name.</div>
+                            </div>
 
-    <div class="mb-3">
-        <label for="studentage" class="form-label">Student Age Bracket</label>
-        <select ref="studentAge" class="form-control" id="studentage">
-            <option value="">Select Age Bracket</option>
-            <?php foreach ($this->brackets ?? [] as $bracket): ?>
-                <option value="<?= $bracket->getId() ?>"><?= $this->escapeHtml($bracket->getAgeBracket()) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <div id="studentHelp" class="form-text">We'll never share your student age with anyone else.</div>
-    </div>
+                            <!-- Physical Age -->
+                            <div class="col-md-6">
+                                <label for="age" class="form-label font-weight-semibold text-muted small uppercase">Age (Numeric)</label>
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-123 text-muted"></i></span>
+                                    <input type="number" ref="age" class="form-control bg-light border-0" id="age" min="1" max="20" placeholder="Enter student age" style="padding: 10px 15px;">
+                                </div>
+                                <div class="form-text text-muted-400 small mt-1">Specify numeric physical age.</div>
+                            </div>
 
-    <div class="mb-3">
-        <label for="studentlanguage" class="form-label">Language</label>
-        <select ref="language" class="form-control" id="studentlanguage">
-            <option value="">Select Language</option>
-            <?php foreach ($this->languages ?? [] as $lang): ?>
-                <option value="<?= $lang->getId() ?>"><?= $this->escapeHtml($lang->getLanguage()) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <div id="languageHelp" class="form-text">We'll never share your selected language with anyone else.</div>
-    </div>
+                            <!-- Student Age Bracket -->
+                            <div class="col-md-6">
+                                <label for="studentage" class="form-label font-weight-semibold text-muted small uppercase">Student Age Bracket</label>
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-calendar-range text-muted"></i></span>
+                                    <select ref="studentAge" class="form-select bg-light border-0" id="studentage" style="padding: 10px 15px;">
+                                        <option value="">Select Age Bracket</option>
+                                        <?php foreach ($this->brackets ?? [] as $bracket): ?>
+                                            <option value="<?= $bracket->getId() ?>"><?= $this->escapeHtml($bracket->getAgeBracket()) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-text text-muted-400 small mt-1">Assign the target age bracket.</div>
+                            </div>
 
-    <div class="mb-3">
-        <label for="teacherid" class="form-label">Teacher ID</label>
-        <input type="text" ref="teacherId" class="form-control" id="teacherid" aria-describedby="teacherHelp" placeholder="Enter teacher ID">
-        <div id="teacherHelp" class="form-text">We'll never share your teacher ID with anyone else.</div>
+                            <!-- Language -->
+                            <div class="col-md-6">
+                                <label for="studentlanguage" class="form-label font-weight-semibold text-muted small uppercase">Language</label>
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-translate text-muted"></i></span>
+                                    <select ref="language" class="form-select bg-light border-0" id="studentlanguage" style="padding: 10px 15px;">
+                                        <option value="">Select Language</option>
+                                        <?php foreach ($this->languages ?? [] as $lang): ?>
+                                            <option value="<?= $lang->getId() ?>"><?= $this->escapeHtml($lang->getLanguage()) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-text text-muted-400 small mt-1">Select evaluation language.</div>
+                            </div>
+
+                            <!-- Teacher ID -->
+                            <div class="col-md-6">
+                                <label for="teacherid" class="form-label font-weight-semibold text-muted small uppercase">Teacher ID</label>
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-person-badge text-muted"></i></span>
+                                    <input type="text" ref="teacherId" class="form-control bg-light border-0" id="teacherid" placeholder="Enter teacher ID" style="padding: 10px 15px;">
+                                </div>
+                                <div class="form-text text-muted-400 small mt-1">The ID code of the assigned teacher.</div>
+                            </div>
+
+                            <!-- Dyslexic Switch -->
+                            <div class="col-md-6 d-flex align-items-center pt-4">
+                                <div class="form-check form-switch ps-5">
+                                    <input v-model="isDyslexic" @click="toggleIsDyslexic" class="form-check-input" type="checkbox" id="defaultCheck2" style="transform: scale(1.3); cursor: pointer; margin-left: -2.5em;">
+                                    <label class="form-check-label font-weight-semibold text-dark ms-2" for="defaultCheck2" style="cursor: pointer;">
+                                        Child Is Possibly Dyslexic
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center mt-5">
+                            <a href="<?= $this->url('home') ?>" class="btn btn-light px-4 py-2 font-weight-semibold shadow-sm" style="border-radius: 10px;">
+                                <i class="bi bi-arrow-left me-2"></i> Home
+                            </a>
+                            <button type="submit" @click.prevent="registerStudent" class="btn btn-primary px-5 py-2 font-weight-semibold shadow-sm" style="background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%); border: none; border-radius: 10px;">
+                                <i class="bi bi-person-plus-fill me-2"></i> Submit Registration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-check">
-        <input v-model="isDyslexic" @click="toggleIsDyslexic" class="form-check-input" type="checkbox" id="defaultCheck2">
-        <label class="form-check-label" for="defaultCheck2">
-           Child Is Possibly Dyslexic
-        </label>
-    </div>
-    
-    <button type="submit" @click.prevent="registerStudent" class="btn btn-primary">Submit</button>
-</form>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

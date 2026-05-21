@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Entity\GameCategoryCollection;
+use Application\Entity\GameTypeCollection;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Doctrine\ORM\EntityManager;
@@ -24,7 +26,7 @@ class AdminController extends AbstractActionController
      */
     private $em;
 
-    
+
 
     public function setEm($em)
     {
@@ -39,11 +41,10 @@ class AdminController extends AbstractActionController
     public function createGameAction()
     {
         $em = $this->em;
-        
+
         // Fetch related entities for the dropdowns
         $gameTypes = $em->getRepository(GameType::class)->findAll();
         $gameCategories = $em->getRepository(GameCategory::class)->findAll();
-        $gameBrackets = $em->getRepository(GameBracket::class)->findAll();
         $gameAgeBrackets = $em->getRepository(GameAgeBracket::class)->findAll();
 
         $request = $this->getRequest();
@@ -52,38 +53,83 @@ class AdminController extends AbstractActionController
 
         if ($request->isPost()) {
             $data = $request->getPost();
-            
+
             $gameName = trim($data['gameName'] ?? '');
             $gamePage = trim($data['gamePage'] ?? '');
-            $gameTypeId = $data['gameType'] ?? null;
-            $gameCategoryId = $data['gameCategory'] ?? null;
+            $gameTypeIds = $data['gameType'] ?? [];
+            $gameCategoryIds = $data['gameCategory'] ?? [];
             $gameDefinition = trim($data['gameDefinition'] ?? '');
-            $gameBracketId = $data['gameBracket'] ?? null;
+            $gameAgeBracketId = $data['gameAgeBracket'] ?? null;
             $languageId = $data['language'] ?? null;
 
-            if (empty($gameName) || empty($gamePage) || empty($gameTypeId) || empty($gameCategoryId) || empty($gameDefinition) || empty($gameBracketId) || empty($languageId)) {
+            if (empty($gameName) || empty($gamePage) || empty($gameTypeIds) || empty($gameCategoryIds) || empty($gameDefinition) || empty($gameAgeBracketId) || empty($languageId)) {
                 $error = 'All fields are required.';
             } else {
-                $gameType = $em->getRepository(GameType::class)->find($gameTypeId);
-                $gameCategory = $em->getRepository(GameCategory::class)->find($gameCategoryId);
-                $gameBracket = $em->getRepository(GameBracket::class)->find($gameBracketId);
-                $language = $em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId);
+                $gameAgeBracket = $em->find(GameAgeBracket::class, $gameAgeBracketId);
+                $language = $em->find(GameLanguage::class, $languageId);
 
-                if (!$gameType || !$gameCategory || !$gameBracket || !$language) {
+                $gameTypesList = [];
+                if (is_array($gameTypeIds)) {
+                    foreach ($gameTypeIds as $id) {
+                        $type = $em->find(GameType::class, $id);
+                        if ($type) {
+                            $gameTypesList[] = $type;
+                        }
+                    }
+                }
+
+                $gameCategoriesList = [];
+                if (is_array($gameCategoryIds)) {
+                    foreach ($gameCategoryIds as $id) {
+                        $cat = $em->find(GameCategory::class, $id);
+                        if ($cat) {
+                            $gameCategoriesList[] = $cat;
+                        }
+                    }
+                }
+
+
+
+                // $game->getGameTypes()->clear();
+
+
+                // $game->getGameCategories()->clear();
+
+
+                if (empty($gameTypesList) || empty($gameCategoriesList) || !$gameAgeBracket || !$language) {
                     $error = 'Invalid selection for Game Type, Category, Bracket, or Language.';
                 } else {
                     $game = new Game();
                     $game->setGameName($gameName)
-                         ->setGamePage($gamePage)
-                         ->setGamesType($gameType)
-                         ->setGameCategory($gameCategory)
-                         ->setGameDefinition($gameDefinition)
-                         ->setGameBracket($gameBracket)
-                         ->setLanguage($language)
-                         ->setUuid(Uuid::uuid4()->toString())
-                         ->setCreatedAt(new \DateTime())
-                         ->setUpdatedAt(new \DateTime());
-                         
+                        ->setGamePage(AdminController::filterGameName($gamePage))
+                        ->setGameDefinition($gameDefinition)
+                        ->setGameAgeBracket($gameAgeBracket)
+                        ->setLanguage($language)
+                        ->setUuid(Uuid::uuid4()->toString())
+                        ->setCreatedAt(new \DateTime())
+                        ->setUpdatedAt(new \DateTime());
+
+                    // foreach ($gameTypesList as $type) {
+                    //     $game->addGameType($type);
+                    // }
+
+                    foreach ($gameTypesList as $type) {
+                        $gameTypeCollection = new GameTypeCollection();
+                        $gameTypeCollection->setGames($game)->setGameTypes($type);
+                        $em->persist($gameTypeCollection);
+                        $game->addGameType($gameTypeCollection);
+                    }
+                    // foreach ($gameCategoriesList as $cat) {
+                    //     $game->addGameCategory($cat);
+                    // }
+
+                    foreach ($gameCategoriesList as $cat) {
+                        $gameCategoryCollection = new GameCategoryCollection();
+                        $gameCategoryCollection->setGame($game)->setGameCategory($cat);
+                        $em->persist($gameCategoryCollection);
+                        $game->addGameCategory($gameCategoryCollection);
+                    }
+
                     try {
                         $em->persist($game);
                         $em->flush();
@@ -99,11 +145,16 @@ class AdminController extends AbstractActionController
         return new ViewModel([
             'gameTypes' => $gameTypes,
             'gameCategories' => $gameCategories,
-            'gameBrackets' => $gameAgeBrackets,
+            'gameAgeBrackets' => $gameAgeBrackets,
             'gameLanguages' => $gameLanguages,
             'error' => $error,
             'success' => $success
         ]);
+    }
+
+    public static function filterGameName($gameName)
+    {
+        return str_replace(" ", "_", trim($gameName));
     }
 
     public function editGameAction()
@@ -112,52 +163,114 @@ class AdminController extends AbstractActionController
         $id = $this->params()->fromQuery('id');
         $error = null;
         $success = null;
+
+        // $game = $em->getRepository(Game::class)->find($id);
+        $game = $em->createQueryBuilder()
+            ->select('g')
+            ->from(Game::class, 'g')
+            ->leftJoin("g.gamesType", "gtc")
+            ->leftJoin("g.gameCategory", "gcc")
+            ->leftJoin("g.gameAgeBracket", "gab")
+            ->leftJoin("g.language", "gl")
+            ->where("g.id = :id")
+            ->setParameter("id", $id)
+            ->getQuery()
+            ->getResult();
         
-        $game = $em->getRepository(Game::class)->find($id);
-        if (!$game) {
+        if (count($game) == 0) {
             return $this->redirect()->toRoute('admin', ['action' => 'index']);
         }
 
+        $game = $game[0];
+
+        $gameName = trim($game->getGameName() ?? '');
+        $gamePage = trim($game->getGamePage() ?? '');
         $gameTypes = $em->getRepository(GameType::class)->findAll();
         $gameCategories = $em->getRepository(GameCategory::class)->findAll();
-        $gameBrackets = $em->getRepository(GameBracket::class)->findAll();
+        $gameAgeBrackets = $em->getRepository(GameAgeBracket::class)->findAll();
         $gameLanguages = $em->getRepository(\Application\Entity\GameLanguage::class)->findAll();
 
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $request->getPost();
-            
+
             $gameName = trim($data['gameName'] ?? '');
             $gamePage = trim($data['gamePage'] ?? '');
-            $gameTypeId = $data['gameType'] ?? null;
-            $gameCategoryId = $data['gameCategory'] ?? null;
+            $gameTypeIds = $data['gameType'] ?? [];
+            $gameCategoryIds = $data['gameCategory'] ?? [];
             $gameDefinition = trim($data['gameDefinition'] ?? '');
-            $gameBracketId = $data['gameBracket'] ?? null;
+            $gameAgeBracketId = $data['gameAgeBracket'] ?? null;
             $languageId = $data['language'] ?? null;
 
-            if (empty($gameName) || empty($gamePage) || empty($gameTypeId) || empty($gameCategoryId) || empty($gameDefinition) || empty($gameBracketId) || empty($languageId)) {
+            if (empty($gameName) || empty($gamePage) || empty($gameTypeIds) || empty($gameCategoryIds) || empty($gameDefinition) || empty($gameAgeBracketId) || empty($languageId)) {
                 $error = 'All fields are required.';
             } else {
-                $gameType = $em->getRepository(GameType::class)->find($gameTypeId);
-                $gameCategory = $em->getRepository(GameCategory::class)->find($gameCategoryId);
-                $gameBracket = $em->getRepository(GameBracket::class)->find($gameBracketId);
+                $gameAgeBracket = $em->getRepository(GameAgeBracket::class)->find($gameAgeBracketId);
                 $language = $em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId);
 
-                if (!$gameType || !$gameCategory || !$gameBracket || !$language) {
+                $gameTypesList = [];
+                if (is_array($gameTypeIds)) {
+                    foreach ($gameTypeIds as $id) {
+                        $type = $em->getRepository(GameType::class)->find($id);
+                        if ($type) {
+                            $gameTypesList[] = $type;
+                        }
+                    }
+                }
+
+                $gameCategoriesList = [];
+                if (is_array($gameCategoryIds)) {
+                    foreach ($gameCategoryIds as $id) {
+                        $cat = $em->getRepository(GameCategory::class)->find($id);
+                        if ($cat) {
+                            $gameCategoriesList[] = $cat;
+                        }
+                    }
+                }
+
+                if (empty($gameTypesList) || empty($gameCategoriesList) || !$gameAgeBracket || !$language) {
                     $error = 'Invalid selection for Game Type, Category, Bracket, or Language.';
                 } else {
                     $game->setGameName($gameName)
-                         ->setGamePage($gamePage)
-                         ->setGamesType($gameType)
-                         ->setGameCategory($gameCategory)
-                         ->setGameDefinition($gameDefinition)
-                         ->setGameBracket($gameBracket)
-                         ->setLanguage($language)
-                         ->setUpdatedAt(new \DateTime());
-                         
+                        ->setGamePage(AdminController::filterGameName($gamePage))
+                        ->setGameDefinition($gameDefinition)
+                        ->setGameAgeBracket($gameAgeBracket)
+                        ->setLanguage($language)
+                        ->setUpdatedAt(new \DateTime());
+
+                    $presentGameTypes =  $game->getGameTypes();
+                    if($presentGameTypes->count() > 0){
+                        foreach ($presentGameTypes as $presentGameType) {
+                            $game->removeGameType($presentGameType);
+                        }
+                    }
+                    foreach ($gameTypesList as $type) {
+                        // $game->removeGameType($type);
+                        $gameTypeCollection = new GameTypeCollection();
+                        $gameTypeCollection->setGames($game)->setGameTypes($type);
+                        // $em->persist($gameTypeCollection);
+                        $game->addGameType($gameTypeCollection);
+                    }
+
+                    $presentGameCategories =  $game->getGameCategories();
+                    if($presentGameCategories->count() > 0){
+                        foreach ($presentGameCategories as $presentGameCategory) {
+                            $game->removeGameCategory($presentGameCategory);
+                        }
+                    }
+                    foreach ($gameCategoriesList as $cat) {
+                       
+                        $gameCategoryCollection = new GameCategoryCollection();
+                        $gameCategoryCollection->setGame($game)->setGameCategory($cat);
+                        // $em->persist($gameCategoryCollection);
+                        $game->addGameCategory($gameCategoryCollection);
+                    }
+
                     try {
+                        $em->persist($game);
                         $em->flush();
                         $success = 'Game successfully updated!';
+                        $this->redirect()->toRoute('admin', ['action' => 'view-games']);
                     } catch (\Throwable $th) {
                         $error = 'Error saving game: ' . $th->getMessage();
                     }
@@ -169,7 +282,7 @@ class AdminController extends AbstractActionController
             'game' => $game,
             'gameTypes' => $gameTypes,
             'gameCategories' => $gameCategories,
-            'gameBrackets' => $gameBrackets,
+            'gameAgeBrackets' => $gameAgeBrackets,
             'gameLanguages' => $gameLanguages,
             'error' => $error,
             'success' => $success
@@ -199,9 +312,9 @@ class AdminController extends AbstractActionController
             if (!empty($query)) {
                 $qb = $this->em->createQueryBuilder();
                 $qb->select('t')
-                   ->from(Teacher::class, 't')
-                   ->where($qb->expr()->like('t.teacherName', ':query'))
-                   ->setParameter('query', '%' . $query . '%');
+                    ->from(Teacher::class, 't')
+                    ->where($qb->expr()->like('t.teacherName', ':query'))
+                    ->setParameter('query', '%' . $query . '%');
                 $teachers = $qb->getQuery()->getResult();
             } else {
                 $teachers = $this->em->getRepository(Teacher::class)->findAll();
@@ -245,7 +358,7 @@ class AdminController extends AbstractActionController
         $request = $this->getRequest();
         $error = null;
         $success = null;
-        
+
         $ages = $this->em->getRepository(GameAgeBracket::class)->findAll();
         $languages = $this->em->getRepository(GameLanguage::class)->findAll();
 
@@ -269,15 +382,15 @@ class AdminController extends AbstractActionController
                 } else {
                     $bracket = new GameBracket();
                     $bracket->setBracketName($bracketName)
-                            ->setBracketId($bracketId)
-                            ->setAge($age)
-                            ->setLanguage($language)
-                            ->setBgId($bgId)
-                            ->setDescription($description)
-                            ->setUuid(Uuid::uuid4()->toString())
-                            ->setCreatedAt(new \DateTime())
-                            ->setUpdatedAt(new \DateTime());
-                    
+                        ->setBracketId($bracketId)
+                        ->setAge($age)
+                        ->setLanguage($language)
+                        ->setBgId($bgId)
+                        ->setDescription($description)
+                        ->setUuid(Uuid::uuid4()->toString())
+                        ->setCreatedAt(new \DateTime())
+                        ->setUpdatedAt(new \DateTime());
+
                     try {
                         $this->em->persist($bracket);
                         $this->em->flush();
@@ -363,11 +476,17 @@ class AdminController extends AbstractActionController
 
         if ($request->isPost()) {
             $ageBracket = trim($request->getPost('ageBracket', ''));
-            if (empty($ageBracket)) {
-                $error = 'Game Age Bracket is required.';
+            $ageLowerBound = $request->getPost('ageLowerBound');
+            $ageUpperBound = $request->getPost('ageUpperBound');
+
+            if (empty($ageBracket) || $ageLowerBound === null || $ageUpperBound === null || $ageLowerBound === '' || $ageUpperBound === '') {
+                $error = 'Game Age Bracket, Lower Bound, and Upper Bound are required.';
             } else {
                 $gameAgeBracket = new GameAgeBracket();
                 $gameAgeBracket->setAgeBracket($ageBracket);
+                $gameAgeBracket->setUuid(Uuid::uuid4()->toString());
+                $gameAgeBracket->setAgeLowerBound((int) $ageLowerBound);
+                $gameAgeBracket->setAgeUpperBound((int) $ageUpperBound);
                 try {
                     $this->em->persist($gameAgeBracket);
                     $this->em->flush();
@@ -391,7 +510,8 @@ class AdminController extends AbstractActionController
     {
         $id = $this->params()->fromQuery('id');
         $gameType = $this->em->getRepository(GameType::class)->find($id);
-        if (!$gameType) return $this->redirect()->toRoute('admin', ['action' => 'view-game-types']);
+        if (!$gameType)
+            return $this->redirect()->toRoute('admin', ['action' => 'view-game-types']);
 
         $request = $this->getRequest();
         $error = null;
@@ -425,7 +545,8 @@ class AdminController extends AbstractActionController
     {
         $id = $this->params()->fromQuery('id');
         $category = $this->em->getRepository(GameCategory::class)->find($id);
-        if (!$category) return $this->redirect()->toRoute('admin', ['action' => 'view-game-categories']);
+        if (!$category)
+            return $this->redirect()->toRoute('admin', ['action' => 'view-game-categories']);
 
         $request = $this->getRequest();
         $error = null;
@@ -459,7 +580,8 @@ class AdminController extends AbstractActionController
     {
         $id = $this->params()->fromQuery('id');
         $ageBracket = $this->em->getRepository(GameAgeBracket::class)->find($id);
-        if (!$ageBracket) return $this->redirect()->toRoute('admin', ['action' => 'view-game-age-brackets']);
+        if (!$ageBracket)
+            return $this->redirect()->toRoute('admin', ['action' => 'view-game-age-brackets']);
 
         $request = $this->getRequest();
         $error = null;
@@ -467,10 +589,15 @@ class AdminController extends AbstractActionController
 
         if ($request->isPost()) {
             $ageText = trim($request->getPost('ageBracket', ''));
-            if (empty($ageText)) {
-                $error = 'Game Age Bracket is required.';
+            $ageLowerBound = $request->getPost('ageLowerBound');
+            $ageUpperBound = $request->getPost('ageUpperBound');
+
+            if (empty($ageText) || $ageLowerBound === null || $ageUpperBound === null || $ageLowerBound === '' || $ageUpperBound === '') {
+                $error = 'Game Age Bracket, Lower Bound, and Upper Bound are required.';
             } else {
                 $ageBracket->setAgeBracket($ageText);
+                $ageBracket->setAgeLowerBound((int) $ageLowerBound);
+                $ageBracket->setAgeUpperBound((int) $ageUpperBound);
                 try {
                     $this->em->flush();
                     $success = 'Game Age Bracket updated successfully!';
@@ -493,7 +620,8 @@ class AdminController extends AbstractActionController
     {
         $id = $this->params()->fromQuery('id');
         $language = $this->em->getRepository(GameLanguage::class)->find($id);
-        if (!$language) return $this->redirect()->toRoute('admin', ['action' => 'view-game-languages']);
+        if (!$language)
+            return $this->redirect()->toRoute('admin', ['action' => 'view-game-languages']);
 
         $request = $this->getRequest();
         $error = null;
@@ -527,7 +655,8 @@ class AdminController extends AbstractActionController
     {
         $id = $this->params()->fromQuery('id');
         $bracket = $this->em->getRepository(GameBracket::class)->find($id);
-        if (!$bracket) return $this->redirect()->toRoute('admin', ['action' => 'view-game-brackets']);
+        if (!$bracket)
+            return $this->redirect()->toRoute('admin', ['action' => 'view-game-brackets']);
 
         $ages = $this->em->getRepository(GameAgeBracket::class)->findAll();
         $languages = $this->em->getRepository(GameLanguage::class)->findAll();
@@ -555,13 +684,13 @@ class AdminController extends AbstractActionController
                     $error = 'Invalid Age or Language selected.';
                 } else {
                     $bracket->setBracketName($bracketName)
-                            ->setBracketId($bracketId)
-                            ->setAge($age)
-                            ->setLanguage($language)
-                            ->setBgId($bgId)
-                            ->setDescription($description)
-                            ->setUpdatedAt(new \DateTime());
-                    
+                        ->setBracketId($bracketId)
+                        ->setAge($age)
+                        ->setLanguage($language)
+                        ->setBgId($bgId)
+                        ->setDescription($description)
+                        ->setUpdatedAt(new \DateTime());
+
                     try {
                         $this->em->flush();
                         $success = 'Game Bracket updated successfully!';
@@ -592,10 +721,10 @@ class AdminController extends AbstractActionController
             if (!empty($query)) {
                 $qb = $this->em->createQueryBuilder();
                 $qb->select('s')
-                   ->from(Student::class, 's')
-                   ->where($qb->expr()->like('s.studentName', ':query'))
-                   ->orWhere($qb->expr()->like('s.studentId', ':query'))
-                   ->setParameter('query', '%' . $query . '%');
+                    ->from(Student::class, 's')
+                    ->where($qb->expr()->like('s.studentName', ':query'))
+                    ->orWhere($qb->expr()->like('s.studentId', ':query'))
+                    ->setParameter('query', '%' . $query . '%');
                 $students = $qb->getQuery()->getResult();
             } else {
                 $students = $this->em->getRepository(Student::class)->findAll();
@@ -612,7 +741,7 @@ class AdminController extends AbstractActionController
     {
         $id = $this->params()->fromQuery('id');
         $student = $this->em->getRepository(Student::class)->find($id);
-        
+
         if (!$student) {
             return $this->redirect()->toRoute('admin', ['action' => 'view-student']);
         }
@@ -631,19 +760,19 @@ class AdminController extends AbstractActionController
             $studentAgeId = trim($data['studentAge'] ?? '');
             $languageId = trim($data['language'] ?? '');
             $isDyslexic = isset($data['isDyslexic']) ? true : false;
-            
+
             if (empty($studentName) || empty($studentId) || empty($studentAgeId) || empty($languageId)) {
                 $error = 'Student Name, Student ID, Age Bracket, and Language are required.';
             } else {
                 $studentAge = $this->em->getRepository(\Application\Entity\GameAgeBracket::class)->find($studentAgeId);
                 $language = $this->em->getRepository(\Application\Entity\GameLanguage::class)->find($languageId);
                 $student->setStudentName($studentName)
-                        ->setStudentId($studentId)
-                        ->setStudentAge($studentAge)
-                        ->setLanguage($language)
-                        ->setIsDyslexic($isDyslexic)
-                        ->setUpdatedAt(new \DateTime());
-                
+                    ->setStudentId($studentId)
+                    ->setStudentAge($studentAge)
+                    ->setLanguage($language)
+                    ->setIsDyslexic($isDyslexic)
+                    ->setUpdatedAt(new \DateTime());
+
                 try {
                     $this->em->flush();
                     $success = 'Student updated successfully!';

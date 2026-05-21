@@ -23,6 +23,23 @@ class GameAgeBracket
      */
     private $ageBracket; // defines the age the game is for
 
+    /**
+     * @ORM\Column(name="uuid", type="string", length=255, nullable=true)
+     */
+    private $uuid;
+
+    /**
+     * Used to define the upper bound of the age bracket
+     * @ORM\Column(name="age_upper_bound", type="integer", nullable=true)
+     */
+    private $ageUpperBound;
+
+    /**
+     * Used to define the lower bound of the age bracket
+     * @ORM\Column(name="age_lower_bound", type="integer", nullable=true)
+     */
+    private $ageLowerBound;
+
     public function getId()
     {
         return $this->id;
@@ -36,6 +53,39 @@ class GameAgeBracket
     public function setAgeBracket($ageBracket)
     {
         $this->ageBracket = $ageBracket;
+        return $this;
+    }
+
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    public function getAgeUpperBound()
+    {
+        return $this->ageUpperBound;
+    }
+
+    public function setAgeUpperBound($ageUpperBound)
+    {
+        $this->ageUpperBound = $ageUpperBound;
+        return $this;
+    }
+
+    public function getAgeLowerBound()
+    {
+        return $this->ageLowerBound;
+    }
+
+    public function setAgeLowerBound($ageLowerBound)
+    {
+        $this->ageLowerBound = $ageLowerBound;
         return $this;
     }
 }

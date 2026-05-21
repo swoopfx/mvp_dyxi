@@ -30,6 +30,14 @@ class Student
     private $studentAge;
 
     /**
+     * 
+     * @ORM\Column(name="age", type="integer", nullable=false)
+     * 
+     * @var int
+     */
+    private $age;
+
+    /**
      * @ORM\Column(name="student_id", type="string", length=255, unique=true)
      * @return string
      */
@@ -277,6 +285,15 @@ class Student
     {
         $this->language = $language;
 
+        return $this;
+    }
+
+    public function getAge(){
+        return $this->age;
+    }
+
+    public function setAge(int $age){
+        $this->age = $age;
         return $this;
     }
 }

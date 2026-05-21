@@ -101,13 +101,15 @@
                 },
 
                 registerStudent() {
-                    if (!this.$refs.studentName.value || !this.$refs.teacherId.value) {
-                        Swal.fire('Please enter both student name and teacher ID');
+                    if (!this.$refs.studentName.value || !this.$refs.teacherId.value || !this.$refs.age.value) {
+                        Swal.fire('Please enter student name, teacher ID, and physical age');
                         return;
                     } else {
                         let formData = new FormData();
                         formData.append('studentName', this.$refs.studentName.value);
                         formData.append('studentAge', this.$refs.studentAge.value);
+                        formData.append('age', this.$refs.age.value);
+                        formData.append('language', this.$refs.language.value);
                         formData.append('teacherid', this.$refs.teacherId.value);
                         formData.append('isDyslexic', this.isDyslexic);
 

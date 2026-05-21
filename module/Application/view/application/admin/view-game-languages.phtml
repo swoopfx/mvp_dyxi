@@ -1,30 +1,98 @@
 <div class="container mt-5">
-    <h2>View Game Languages</h2>
-    <div class="table-responsive mt-4">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Language Name</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($this->languages) > 0): ?>
-                    <?php foreach ($this->languages as $language): ?>
-                    <tr>
-                        <td><?= $language->getId() ?></td>
-                        <td><?= $this->escapeHtml($language->getLanguage()) ?></td>
-                        <td>
-                            <a href="<?= $this->url('admin', ['action' => 'edit-game-language']) ?>?id=<?= $language->getId() ?>" class="btn btn-sm btn-primary">Edit</a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr><td colspan="3" class="text-center">No game languages found.</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                <div class="card-header bg-gradient-primary text-white p-4" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1 text-white font-weight-bold">Game Languages</h3>
+                            <p class="mb-0 text-white-50 small">Manage game languages for localized target segments.</p>
+                        </div>
+                        <i class="bi bi-translate fs-2 text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Quick Search bar -->
+                    <div class="row mb-4 justify-content-between align-items-center">
+                        <div class="col-md-4">
+                            <a href="<?= $this->url('admin', ['action' => 'create-game-language']) ?>" class="btn btn-primary px-4 py-2 font-weight-semibold shadow-sm" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border: none; border-radius: 8px;">
+                                <i class="bi bi-plus-circle me-2"></i> Add Game Language
+                            </a>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="langSearch" class="form-control border-0" placeholder="Filter by language..." style="padding: 10px 15px; outline: none; box-shadow: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+                        <table class="table table-hover align-middle mb-0" id="langTable">
+                            <thead class="bg-light text-muted uppercase font-weight-semibold small">
+                                <tr>
+                                    <th class="ps-4">Database ID</th>
+                                    <th>Language Name</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (count($this->languages ?? []) > 0): ?>
+                                    <?php foreach ($this->languages as $language): ?>
+                                        <tr>
+                                            <td class="ps-4 text-muted small">#<?= $language->getId() ?></td>
+                                            <td>
+                                                <span class="font-weight-semibold" style="color: #1e293b;"><?= $this->escapeHtml($language->getLanguage()) ?></span>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="<?= $this->url('admin', ['action' => 'edit-game-language']) ?>?id=<?= $language->getId() ?>" class="btn btn-sm btn-primary px-3 shadow-sm" style="border-radius: 6px; background-color: #e11d48; border: none;">
+                                                    <i class="bi bi-pencil me-1"></i> Edit
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="3" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-3 text-muted-300"></i>
+                                            No game languages found.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                    <a href="<?= $this->url('admin') ?>" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;">
+                        <i class="bi bi-arrow-left me-2"></i> Admin Panel
+                    </a>
+                    <span class="text-muted small">Total: <?= count($this->languages ?? []) ?> languages registered.</span>
+                </div>
+            </div>
+        </div>
     </div>
-    <a href="<?= $this->url('admin') ?>" class="btn btn-secondary">Back to Dashboard</a>
 </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('langSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#langTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
