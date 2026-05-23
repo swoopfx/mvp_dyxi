@@ -321,10 +321,10 @@ class IndexController extends AbstractActionController
                 ->from(GameTypeCollection::class, "gtc")
                 ->leftJoin("gtc.games", "g")
                 ->leftJoin("g.gameAgeBracket", "gab")
-                ->leftJoin("g.gamesType", "gt")
+                // ->leftJoin("g.gamesType", "gt")
                 // ->leftJoin("g.gameCategories", "gc")
                 // ->leftJoin("g.language", "glang")
-                // ->where("gtc.gameTypes = :type")
+                ->where("gtc.gameTypes = :type")
                 // ->andWhere("ga.bracketId = :age")
                 ->setParameter("type", $params["type"])
                 // ->setParameter("age", $params["age"])
@@ -338,9 +338,34 @@ class IndexController extends AbstractActionController
         return $response;
     }
 
+    /**
+     * Get Game Type collections by ids 
+     * used to retrieve all game Tpes Id registered 
+     * @query ids
+     * @return \Laminas\Stdlib\ResponseInterface
+     */
     public function gameTypeIdAction(){
-        $request = $this->getRequest();
         $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $data = $this->entityManager->createQueryBuilder()
+            ->select(["c"])->from(GameType::class, "c")
+            ->getQuery()->getResult(Query::HYDRATE_ARRAY);
+        return $response->setContent(json_encode(["success"=> true, "data"=>$data]));
+    }
+
+    /**
+     * Get Game Category collections by ids 
+     * used to retrieve all game Categories Id registered 
+     * @query ids
+     * @return \Laminas\Stdlib\ResponseInterface
+     */
+    public function gameCategoryIdAction(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $data = $this->entityManager->createQueryBuilder()
+            ->select(["c"])->from(GameCategory::class, "c")
+            ->getQuery()->getResult(Query::HYDRATE_ARRAY);
+        return $response->setContent(json_encode(["success"=> true, "data"=>$data]));
     }
 
     /**

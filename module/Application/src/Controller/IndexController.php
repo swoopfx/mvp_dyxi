@@ -300,7 +300,7 @@ class IndexController extends AbstractActionController
                     'studentName' => $student->getStudentName(),
                     'isDyslexic' => $student->getIsDyslexic(),
                     'studentAge' => $student->getStudentAge() ? $student->getStudentAge()->getAgeBracket() : null,
-                    'age' => $student->getAge(),
+                    'age' => $student->getAge()s,
                     'language' => $student->getLanguage() ? $student->getLanguage()->getLanguage() : null,
                     'teacherId' => $student->getTeacherId() ? $student->getTeacherId()->getTeacherId() : null,
                     'uuid' => $student->getUuid(),
