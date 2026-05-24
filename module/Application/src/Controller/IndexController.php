@@ -103,6 +103,8 @@ class IndexController extends AbstractActionController
             $student = new \Application\Entity\Student();
             $studentName = $data['studentName'] ?? null;
             $isDyslaxic = isset($data['isDyslaxic']) ? filter_var($data['isDyslaxic'], FILTER_VALIDATE_BOOLEAN) : false;
+            $isAdhd = isset($data['isAdhd']) ? filter_var($data['isAdhd'], FILTER_VALIDATE_BOOLEAN) : false;
+            $isOtherNeuroDivergent = isset($data['isOtherNeuroDivergent']) ? filter_var($data['isOtherNeuroDivergent'], FILTER_VALIDATE_BOOLEAN) : false;
             $studentId = $this->generateId($em, 'students');
             $age = isset($data['age']) && $data['age'] !== '' ? (int)$data['age'] : null;
 
@@ -131,6 +133,8 @@ class IndexController extends AbstractActionController
 
             $student->setStudentName($studentName)->setStudentId($studentId)
                 ->setIsDyslexic($isDyslaxic)
+                ->setIsAdhd($isAdhd)
+                ->setIsOtherNeuroDivergent($isOtherNeuroDivergent)
                 ->setUuid(Uuid::uuid4()->toString())
                 ->setStudentAge($studentAge)
                 ->setLanguage($language)
@@ -216,6 +220,8 @@ class IndexController extends AbstractActionController
                 $age = $data['age'] ?? null;
                 $teacherIdCode = trim($data['teacherid'] ?? '');
                 $isDyslexic = isset($data['isDyslexic']) ? true : false;
+                $isAdhd = isset($data['isAdhd']) ? true : false;
+                $isOtherNeuroDivergent = isset($data['isOtherNeuroDivergent']) ? true : false;
 
                 if (empty($studentName) || empty($studentId) || empty($studentAgeId) || empty($languageId)) {
                     $error = 'Student Name, Student ID, Age Bracket, and Language are required.';
@@ -231,6 +237,8 @@ class IndexController extends AbstractActionController
                         ->setAge($age ? (int)$age : null)
                         ->setTeacherId($teacher)
                         ->setIsDyslexic($isDyslexic)
+                        ->setIsAdhd($isAdhd)
+                        ->setIsOtherNeuroDivergent($isOtherNeuroDivergent)
                         ->setUpdatedAt(new \DateTime());
 
                     try {
@@ -299,12 +307,15 @@ class IndexController extends AbstractActionController
                 'data' => [
                     'studentName' => $student->getStudentName(),
                     'isDyslexic' => $student->getIsDyslexic(),
+                    'isAdhd' => $student->getIsAdhd(),
+                    'isOtherNeuroDivergent' => $student->getIsOtherNeuroDivergent(),
                     'studentAge' => $student->getStudentAge() ? $student->getStudentAge()->getAgeBracket() : null,
-                    'age' => $student->getAge()s,
+                    'age' => $student->getAge(),
                     'language' => $student->getLanguage() ? $student->getLanguage()->getLanguage() : null,
                     'teacherId' => $student->getTeacherId() ? $student->getTeacherId()->getTeacherId() : null,
                     'uuid' => $student->getUuid(),
-                    'id' => $student->getStudentId()
+                    'id' => $student->getId(),
+                    "studentId"=>$student->getStudentId()
 
                 ],
             ]));

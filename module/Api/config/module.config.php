@@ -22,11 +22,23 @@ return [
                     ],
                 ],
             ],
+
+            'api_post' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/api-post[/:action]',
+                    'defaults' => [
+                        'controller' => PostController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
             IndexController::class => IndexControllerFactory::class,
+            PostController::class => PostControllerFactory::class,
         ],
     ],
     'view_manager' => [

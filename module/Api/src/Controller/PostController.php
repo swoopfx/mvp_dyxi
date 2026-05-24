@@ -9,9 +9,9 @@ class PostController extends AbstractActionController
 {
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct()
     {
-        $this->entityManager = $entityManager;
+        // $this->entityManager = $entityManager;
     }
 
     // create a post to recognition shareExplorer  api/posts
@@ -178,6 +178,11 @@ class PostController extends AbstractActionController
             "message" => "Post created successfully"
         ]));
         return $response;
+    }
+
+    public function setEntityManager($em){
+        $this->entityManager = $em;
+        return $this;
     }
     
 }

@@ -84,6 +84,8 @@
                 return {
                     message: 'Hello Vue!',
                     isDyslexic: true,
+                    isAdhd: false,
+                    isOtherNeuroDivergent: false,
                 }
             },
 
@@ -94,6 +96,14 @@
 
                 toggleIsDyslexic() {
                     this.isDyslexic = !this.isDyslexic;
+                },
+
+                toggleIsAdhd() {
+                    this.isAdhd = !this.isAdhd;
+                },
+
+                toggleIsOtherNeuroDivergent() {
+                    this.isOtherNeuroDivergent = !this.isOtherNeuroDivergent;
                 },
 
                 showAlert() {
@@ -112,6 +122,8 @@
                         formData.append('language', this.$refs.language.value);
                         formData.append('teacherid', this.$refs.teacherId.value);
                         formData.append('isDyslexic', this.isDyslexic);
+                        formData.append('isAdhd', this.isAdhd);
+                        formData.append('isOtherNeuroDivergent', this.isOtherNeuroDivergent);
 
                         axios.post('/application/create-student', formData)
                             .then(response => {

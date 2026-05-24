@@ -29,7 +29,6 @@ return [
     'DoctrineModule',
     'DoctrineORMModule',
     'Laminas\Diactoros',
-    'Laminas\Cache\Storage\Adapter\Redis',
     'Application',
     'Api',
 ];

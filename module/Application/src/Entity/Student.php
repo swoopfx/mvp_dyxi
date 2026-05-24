@@ -1,5 +1,4 @@
 <?php
-
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -50,6 +49,21 @@ class Student
      * @var bool
      */
     private $isDyslexic;
+
+    /**
+     * Undocumented variable
+     * @ORM\Column(name="is_adhd", type="boolean", options={"default": false})
+     * @var bool
+     */
+    private $isAdhd;
+
+    /**
+     * Undocumented variable
+     * @ORM\Column(name="is_other_neurodivergent", type="boolean", options={"default": false})
+     * @var bool
+     */
+    private $isOtherNeuroDivergent;
+
 
     /**
      * Undocumented variable
@@ -294,6 +308,24 @@ class Student
 
     public function setAge(int $age){
         $this->age = $age;
+        return $this;
+    }
+
+    public function getIsAdhd(){
+        return $this->isAdhd;
+    }
+
+    public function setIsAdhd(bool $isAdhd){
+        $this->isAdhd = $isAdhd;
+        return $this;
+    }
+
+    public function getIsOtherNeuroDivergent(){
+        return $this->isOtherNeuroDivergent;
+    }
+
+    public function setIsOtherNeuroDivergent(bool $isOtherNeuroDivergent){
+        $this->isOtherNeuroDivergent = $isOtherNeuroDivergent;
         return $this;
     }
 }

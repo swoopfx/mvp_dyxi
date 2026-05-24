@@ -11,6 +11,8 @@ class PostControllerFactroy implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $entityManager = $container->get(EntityManager::class);
-        
+        $ctr = new PostControler();
+        $ctr->setEntityManager($entityManager);
+        return $ctr;
     }
 }
