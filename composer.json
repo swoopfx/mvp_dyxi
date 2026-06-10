@@ -17,6 +17,8 @@
         "google/protobuf": "~5.35",
         "grpc/grpc": "~1.80",
         "guzzlehttp/guzzle": "~7.10",
+        "laminas/laminas-cache": "^3.14",
+        "laminas/laminas-cache-storage-adapter-redis": "^2.10",
         "laminas/laminas-cli": "~1.10.0",
         "laminas/laminas-component-installer": "~3.4.0",
         "laminas/laminas-db": "~2.20.0",

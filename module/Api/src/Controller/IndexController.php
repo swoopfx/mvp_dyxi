@@ -378,7 +378,7 @@ class IndexController extends AbstractActionController
         $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
         $request = $this->getRequest();
          $params = $request->getQuery()->toArray();
-         if($params["leve"] == "" || $params["age"] == "" || $params["cat"] == ""){
+         if($params["level"] == ""  $params["age"] == "" || $params["cat"] == ""){
              $response->setContent(json_encode([
                 "success" => false,
                 "message" => "Missing required parameters"
