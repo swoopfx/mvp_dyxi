@@ -10,6 +10,8 @@ use Application\Entity\GameAgeBracket;
 use Application\Entity\GameLanguage;
 use Application\Entity\GameCategory;
 use Application\Entity\GameTypeCollection;
+use Application\Entity\GamePrograms;
+use Application\Entity\GameProgramsCollection;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 use Doctrine\ORM\EntityManager;
@@ -378,7 +380,7 @@ class IndexController extends AbstractActionController
         $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
         $request = $this->getRequest();
          $params = $request->getQuery()->toArray();
-         if($params["level"] == ""  $params["age"] == "" || $params["cat"] == ""){
+         if($params["level"] == "" && $params["age"] == "" && $params["cat"] == ""){
              $response->setContent(json_encode([
                 "success" => false,
                 "message" => "Missing required parameters"
@@ -389,8 +391,8 @@ class IndexController extends AbstractActionController
             // $repository = $this->entityManager->getRepository(Game::class);
             $data = $this->entityManager->createQueryBuilder()
                 ->select([
-                    "partial gcc.{id, games, gameTypes}",
-                    "partial g.{id, gameName, gamePage, gamesType, gameCategory, gameDefinition, uuid, gameAgeBracket, language}",
+                    "partial gcc.{id, games, gameCategory}",
+                    "partial g.{id, gameName, gamePage, gameDefinition, uuid, gameAgeBracket, language}",
                     "partial gab.{id, ageBracket, uuid, ageUpperBound, ageLowerBound}",
                     // "partial gt.{id, type}",
                     // "partial glang.{id, language}",
@@ -401,9 +403,9 @@ class IndexController extends AbstractActionController
                 // ->leftJoin("g.gameTypes", "gt")
                 // ->leftJoin("g.gameCategories", "gc")
                 // ->leftJoin("g.language", "glang")
-                ->where("gcc.gameTypes = :type")
+                ->where("gcc.gameCategory = :cat")
                 // ->andWhere("ga.bracketId = :age")
-                ->setParameter("type", $params["cat"])
+                ->setParameter("cat", $params["cat"])
                 // ->setParameter("age", $params["age"])
                 ->getQuery()
                 ->getResult(Query::HYDRATE_ARRAY);
@@ -412,6 +414,57 @@ class IndexController extends AbstractActionController
                 "data" => $data
             ]));
          }
+        return $response;
+    }
+
+    /**
+     * Get Game Program collections
+     * @return \Laminas\Stdlib\ResponseInterface
+     */
+    public function gameProgramsIdAction(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $data = $this->entityManager->createQueryBuilder()
+            ->select(["c"])->from(GamePrograms::class, "c")
+            ->getQuery()->getResult(Query::HYDRATE_ARRAY);
+        return $response->setContent(json_encode(["success"=> true, "data"=>$data]));
+    }
+
+    /**
+     * Gets all Games associated to a program
+     * @return \Laminas\Stdlib\ResponseInterface
+     */
+    public function gameProgramsAction(){
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $request = $this->getRequest();
+        $params = $request->getQuery()->toArray();
+        if(!isset($params["program"]) || $params["program"] == ""){
+             $response->setContent(json_encode([
+                "success" => false,
+                "message" => "Missing required parameters"
+            ]));
+            $response->setStatusCode(400);
+            return $response;
+        }else{
+            $data = $this->entityManager->createQueryBuilder()
+                ->select([
+                    "partial gpc.{id, games, gamePrograms}",
+                    "partial g.{id, gameName, gamePage, gameDefinition, uuid, gameAgeBracket, language}",
+                    "partial gab.{id, ageBracket, uuid, ageUpperBound, ageLowerBound}",
+                ])
+                ->from(GameProgramsCollection::class, "gpc")
+                ->leftJoin("gpc.games", "g")
+                ->leftJoin("g.gameAgeBracket", "gab")
+                ->where("gpc.gamePrograms = :program")
+                ->setParameter("program", $params["program"])
+                ->getQuery()
+                ->getResult(Query::HYDRATE_ARRAY);
+            $response->setContent(json_encode([
+                "success" => true,
+                "data" => $data
+            ]));
+        }
         return $response;
     }
 

@@ -57,6 +57,12 @@ class Game
     private $gameCategory; // ADHD or Dyslexia
 
     /**
+     * @ORM\OneToMany(targetEntity="GameProgramsCollection", mappedBy="games", orphanRemoval=true,  cascade={"persist", "remove"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $gamePrograms;
+
+    /**
      * Undocumented variable
      * @ORM\Column(name="game_definition", type="text", columnDefinition="LONGTEXT", nullable=true)
      * @var string
@@ -357,9 +363,21 @@ class Game
         return $this->gameCategory;
     }
 
+    public function getGamePrograms()
+    {
+        return $this->gamePrograms;
+    }
+
+    public function setGamePrograms($gamePrograms)
+    {
+        $this->gamePrograms = $gamePrograms;
+        return $this;
+    }
+
     public function __construct(){
         $this->gamesType = new ArrayCollection();
         $this->gameCategory = new ArrayCollection();
+        $this->gamePrograms = new ArrayCollection();
     }
 }
     

@@ -18,6 +18,8 @@ use Application\Entity\Teacher;
 use Application\Entity\Student;
 use Application\Entity\GameAgeBracket;
 use Application\Entity\GameLanguage;
+use Application\Entity\GamePrograms;
+use Application\Entity\GameProgramsCollection;
 
 class AdminController extends AbstractActionController
 {
@@ -46,6 +48,7 @@ class AdminController extends AbstractActionController
         $gameTypes = $em->getRepository(GameType::class)->findAll();
         $gameCategories = $em->getRepository(GameCategory::class)->findAll();
         $gameAgeBrackets = $em->getRepository(GameAgeBracket::class)->findAll();
+        $gamePrograms = $em->getRepository(GamePrograms::class)->findAll();
 
         $request = $this->getRequest();
         $error = null;
@@ -61,6 +64,7 @@ class AdminController extends AbstractActionController
             $gameDefinition = trim($data['gameDefinition'] ?? '');
             $gameAgeBracketId = $data['gameAgeBracket'] ?? null;
             $languageId = $data['language'] ?? null;
+            $gameProgramId = $data['gameProgram'] ?? null;
 
             if (empty($gameName) || empty($gamePage) || empty($gameTypeIds) || empty($gameCategoryIds) || empty($gameDefinition) || empty($gameAgeBracketId) || empty($languageId)) {
                 $error = 'All fields are required.';
@@ -130,6 +134,16 @@ class AdminController extends AbstractActionController
                         $game->addGameCategory($gameCategoryCollection);
                     }
 
+                    if (!empty($gameProgramId)) {
+                        $gameProgram = $em->find(GamePrograms::class, $gameProgramId);
+                        if ($gameProgram) {
+                            $gameProgramsCollection = new GameProgramsCollection();
+                            $gameProgramsCollection->setGames($game);
+                            $gameProgramsCollection->setGamePrograms($gameProgram);
+                            $em->persist($gameProgramsCollection);
+                        }
+                    }
+
                     try {
                         $em->persist($game);
                         $em->flush();
@@ -147,6 +161,7 @@ class AdminController extends AbstractActionController
             'gameCategories' => $gameCategories,
             'gameAgeBrackets' => $gameAgeBrackets,
             'gameLanguages' => $gameLanguages,
+            'gamePrograms' => $gamePrograms,
             'error' => $error,
             'success' => $success
         ]);
@@ -172,6 +187,7 @@ class AdminController extends AbstractActionController
             ->leftJoin("g.gameCategory", "gcc")
             ->leftJoin("g.gameAgeBracket", "gab")
             ->leftJoin("g.language", "gl")
+            ->leftJoin("g.gamePrograms", "gpc")
             ->where("g.id = :id")
             ->setParameter("id", $id)
             ->getQuery()
@@ -189,6 +205,7 @@ class AdminController extends AbstractActionController
         $gameCategories = $em->getRepository(GameCategory::class)->findAll();
         $gameAgeBrackets = $em->getRepository(GameAgeBracket::class)->findAll();
         $gameLanguages = $em->getRepository(\Application\Entity\GameLanguage::class)->findAll();
+        $gamePrograms = $em->getRepository(GamePrograms::class)->findAll();
 
         $request = $this->getRequest();
         if ($request->isPost()) {
@@ -201,6 +218,7 @@ class AdminController extends AbstractActionController
             $gameDefinition = trim($data['gameDefinition'] ?? '');
             $gameAgeBracketId = $data['gameAgeBracket'] ?? null;
             $languageId = $data['language'] ?? null;
+            $gameProgramId = $data['gameProgram'] ?? null;
 
             if (empty($gameName) || empty($gamePage) || empty($gameTypeIds) || empty($gameCategoryIds) || empty($gameDefinition) || empty($gameAgeBracketId) || empty($languageId)) {
                 $error = 'All fields are required.';
@@ -266,6 +284,22 @@ class AdminController extends AbstractActionController
                         $game->addGameCategory($gameCategoryCollection);
                     }
 
+                    $presentGamePrograms = $game->getGamePrograms();
+                    if ($presentGamePrograms->count() > 0) {
+                        foreach ($presentGamePrograms as $presentGP) {
+                            $em->remove($presentGP);
+                        }
+                    }
+                    if (!empty($gameProgramId)) {
+                        $gameProgram = $em->getRepository(GamePrograms::class)->find($gameProgramId);
+                        if ($gameProgram) {
+                            $gameProgramsCollection = new GameProgramsCollection();
+                            $gameProgramsCollection->setGames($game);
+                            $gameProgramsCollection->setGamePrograms($gameProgram);
+                            $game->getGamePrograms()->add($gameProgramsCollection);
+                        }
+                    }
+
                     try {
                         $em->persist($game);
                         $em->flush();
@@ -284,6 +318,7 @@ class AdminController extends AbstractActionController
             'gameCategories' => $gameCategories,
             'gameAgeBrackets' => $gameAgeBrackets,
             'gameLanguages' => $gameLanguages,
+            'gamePrograms' => $gamePrograms,
             'error' => $error,
             'success' => $success
         ]);
@@ -789,5 +824,119 @@ class AdminController extends AbstractActionController
             'error' => $error,
             'success' => $success
         ]);
+    }
+
+    public function viewProgramsAction()
+    {
+        $programs = $this->em->getRepository(GamePrograms::class)->findAll();
+        $viewModel = new ViewModel(['programs' => $programs]);
+        $viewModel->setTemplate('application/admin/view-programs');
+        return $viewModel;
+    }
+
+    public function viewGameProgramsAction()
+    {
+        return $this->viewProgramsAction();
+    }
+
+    public function createProgramAction()
+    {
+        $request = $this->getRequest();
+        $error = null;
+        $success = null;
+
+        if ($request->isPost()) {
+            $programName = trim($request->getPost('programName', ''));
+            if (empty($programName)) {
+                $error = 'Program Name is required.';
+            } else {
+                $program = new GamePrograms();
+                $program->setProgramName($programName);
+                try {
+                    $this->em->persist($program);
+                    $this->em->flush();
+                    $success = 'Game Program created successfully!';
+                    return $this->redirect()->toRoute('admin', ['action' => 'view-programs']);
+                } catch (\Throwable $th) {
+                    $error = 'Error creating game program: ' . $th->getMessage();
+                }
+            }
+        }
+
+        $viewModel = new ViewModel(['error' => $error, 'success' => $success]);
+        $viewModel->setTemplate('application/admin/create-program');
+        return $viewModel;
+    }
+
+    public function createGameProgramAction()
+    {
+        return $this->createProgramAction();
+    }
+
+    public function editProgramsAction()
+    {
+        $id = $this->params()->fromQuery('id');
+        $program = $this->em->getRepository(GamePrograms::class)->find($id);
+        if (!$program) {
+            return $this->redirect()->toRoute('admin', ['action' => 'view-programs']);
+        }
+
+        $request = $this->getRequest();
+        $error = null;
+        $success = null;
+
+        if ($request->isPost()) {
+            $programName = trim($request->getPost('programName', ''));
+            if (empty($programName)) {
+                $error = 'Program Name is required.';
+            } else {
+                $program->setProgramName($programName);
+                try {
+                    $this->em->flush();
+                    $success = 'Game Program updated successfully!';
+                    return $this->redirect()->toRoute('admin', ['action' => 'view-programs']);
+                } catch (\Throwable $th) {
+                    $error = 'Error updating game program: ' . $th->getMessage();
+                }
+            }
+        }
+
+        $viewModel = new ViewModel([
+            'program' => $program,
+            'error' => $error,
+            'success' => $success
+        ]);
+        $viewModel->setTemplate('application/admin/edit-program');
+        return $viewModel;
+    }
+
+    public function editProgramAction()
+    {
+        return $this->editProgramsAction();
+    }
+
+    public function editGameProgramAction()
+    {
+        return $this->editProgramsAction();
+    }
+
+    public function deleteProgramAction()
+    {
+        $id = $this->params()->fromQuery('id');
+        $program = $this->em->getRepository(GamePrograms::class)->find($id);
+        if ($program) {
+            try {
+                $this->em->remove($program);
+                $this->em->flush();
+            } catch (\Throwable $th) {
+                // Ignore or log error
+            }
+        }
+        return $this->redirect()->toRoute('admin', ['action' => 'view-programs']);
+    }
+
+    public function deleteGameProgramAction()
+    {
+        return $this->deleteProgramAction();
     }
 }
