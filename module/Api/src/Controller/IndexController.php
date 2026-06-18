@@ -391,14 +391,14 @@ class IndexController extends AbstractActionController
             // $repository = $this->entityManager->getRepository(Game::class);
             $data = $this->entityManager->createQueryBuilder()
                 ->select([
-                    "partial gcc.{id, games, gameCategory}",
-                    "partial g.{id, gameName, gamePage, gameDefinition, uuid, gameAgeBracket, language}",
+                    "partial gcc.{id, game, gameCategory}",
+                    "partial g.{id, gameName, gamePage, gameDefinition, uuid, language}",
                     "partial gab.{id, ageBracket, uuid, ageUpperBound, ageLowerBound}",
                     // "partial gt.{id, type}",
                     // "partial glang.{id, language}",
                 ])
                 ->from(GameCategoryCollection::class, "gcc")
-                ->leftJoin("gcc.games", "g")
+                ->leftJoin("gcc.game", "g")
                 ->leftJoin("g.gameAgeBracket", "gab")
                 // ->leftJoin("g.gameTypes", "gt")
                 // ->leftJoin("g.gameCategories", "gc")

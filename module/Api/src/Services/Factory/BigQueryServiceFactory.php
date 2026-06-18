@@ -4,13 +4,16 @@ namespace Api\Services\Factory;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Api\Services\BigQueryService;
 
 class BigQueryServiceFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        $bigQueryService = new BigQueryService();
+       $config = $container->get('config');
 
-        return $bigQueryService;
+        return new BigQueryService(
+            $config['bigquery']
+        );
     }
 }
