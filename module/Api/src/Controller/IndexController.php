@@ -418,6 +418,79 @@ class IndexController extends AbstractActionController
     }
 
     /**
+     * Download the ggml-base.en.bin model file.
+     * Creates the model directory if it does not exist.
+     * Streams the file in chunks to avoid timeouts and memory exhaustion.
+     * 
+     * GET /api/download-model
+     * @return \Laminas\Stdlib\ResponseInterface
+     */
+    public function downloadModelAction()
+    {
+        // Remove PHP execution time limit so large file transfers don't get killed
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+
+        $response = $this->getResponse();
+
+        // Resolve the model directory relative to the project root
+        $projectRoot = realpath(__DIR__ . '/../../../../..');
+        $modelDir = $projectRoot . '/model';
+        $filePath = $modelDir . '/ggml-base.en.bin';
+
+        // Create the model directory if it does not exist
+        if (!is_dir($modelDir)) {
+            mkdir($modelDir, 0755, true);
+        }
+
+        // Check that the file exists before attempting to serve it
+        if (!file_exists($filePath)) {
+            $response->setStatusCode(404);
+            $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+            $response->setContent(json_encode([
+                'success' => false,
+                'message' => 'Model file not found. Please place ggml-base.en.bin in the model/ directory.',
+            ]));
+            return $response;
+        }
+
+        $fileSize = filesize($filePath);
+
+        // Send headers directly and stream the file in chunks to bypass
+        // Laminas response buffering — prevents memory exhaustion and timeouts.
+        // Clean any existing output buffers so data flows immediately.
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="ggml-base.en.bin"');
+        header('Content-Length: ' . $fileSize);
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // Stream in 8 KB chunks to keep memory usage flat
+        $handle = fopen($filePath, 'rb');
+        if ($handle === false) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Unable to open model file for reading.',
+            ]);
+            exit;
+        }
+
+        while (!feof($handle)) {
+            echo fread($handle, 8192);
+            flush();
+        }
+
+        fclose($handle);
+        exit;
+    }
+
+    /**
      * Get Game Program collections
      * @return \Laminas\Stdlib\ResponseInterface
      */

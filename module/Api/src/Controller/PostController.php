@@ -197,35 +197,44 @@ class PostController extends AbstractActionController
         // send the data to BigQuery
 
 
-        $bigQuery->insertRows('recog_shape_recog', [
-    [
-        'insertId' => uniqid('mvp_dyxi_'),
-        'json' => [
-            'session_id' => (string)$post['session_id'],
-            'game_id' => (string)$post['game_id'],
-            'game_type' => (string)$post['game_type'],
-            'game_category' => (string)$post['game_category'],
-            'game_program' => (string)$post['game_program'],
+       $row = [
 
-            'input_events' => json_encode($post['input_events'], JSON_UNESCAPED_UNICODE),
+    'session_id' => (string)$post['session_id'],
+    'game_id' => (string)$post['game_id'],
+    'game_type' => (string)$post['game_type'],
+    'game_category' => (string)$post['game_category'],
+    'game_program' => (string)$post['game_program'],
 
-            'user_id' => (string)$post['user_id'],
+    'input_events' => json_encode($post['input_events']),
 
-            'problem_solving_index' => (float)$post['problem_solving_index'],
-            'creative_index' => (float)$post['creative_index'],
-            'average_time_correct' => (float)$post['average_time_correct'],
-            'average_time_failed' => (float)$post['average_time_failed'],
-            'total_game_time' => (float)$post['total_game_time'],
+    'user_id' => (string)$post['user_id'],
 
-            'start_time' => $post['start_time'],
+    'problem_solving_index' => (float)$post['problem_solving_index'],
+    'creative_index' => (float)$post['creative_index'],
+    'average_time_correct' => (float)$post['average_time_correct'],
+    'average_time_failed' => (float)$post['average_time_failed'],
+    'total_game_time' => (float)$post['total_game_time'],
 
-            'total_correct' => (int)$post['total_correct'],
-            'total_failed' => (int)$post['total_failed'],
+    // 'start_time' => date(
+    //     'Y-m-d\TH:i:s\Z',
+    //     strtotime($post['start_time'])
+    // ),
+    "start_time"=> (string)$post['start_time'],
 
-            'match_events' => json_encode($post['match_events'], JSON_UNESCAPED_UNICODE),
-        ]
-    ]
-]);
+    'total_correct' => (int)$post['total_correct'],
+    'total_failed' => (int)$post['total_failed'],
+
+    'match_events' => json_encode($post['match_events'])
+
+];
+
+$result = $bigQuery->insertRow(
+    'recog_shape_recog',
+    $row
+);
+
+
+
 
         $this->entityManager->persist($recogShapeRecog);
         $this->entityManager->flush();

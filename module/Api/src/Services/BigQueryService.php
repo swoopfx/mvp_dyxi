@@ -42,6 +42,29 @@ class BigQueryService
         );
     }
 
+ public function insertRow(string $table, array $row)
+{
+    $url = sprintf(
+        "https://bigquery.googleapis.com/bigquery/v2/projects/%s/datasets/%s/tables/%s/insertAll",
+        $this->projectId,
+        $this->dataset,
+        $table
+    );
+
+    return $this->request(
+        "POST",
+        $url,
+        [
+            "rows" => [
+                [
+                    "insertId" => $row['session_id'],
+                    "json" => $row
+                ]
+            ]
+        ]
+    );
+}
+
     /**
      * Insert rows
      */
